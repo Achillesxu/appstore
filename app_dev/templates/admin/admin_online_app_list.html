@@ -1,0 +1,179 @@
+<nav>
+	<a href="/admin/overview">总览</a>
+	<a href="/admin/appcenter" class="current">应用中心</a>
+	<a href="/admin/usercenter">用户中心</a>
+	<a href="/admin/msg">消息</a>
+	<a href="/admin/protocols">协议</a>
+</nav>
+<div id="admin">
+
+
+<script>
+$(function(){
+	$('.table_list').on('mouseover', 'tbody tr', function(){
+		$(this).siblings('.curr_tr').removeClass('curr_tr');
+		$(this).removeClass('curr_tr');
+		$(this).addClass('curr_tr');
+		$('.table_list .delete').css('display','none');
+		$('.delete', this).css('display','block');
+	});
+	$('.table_list').on('click', 'tbody tr', function(){
+		var id = $('td:first', this).text()
+		//loadUrl('admin/form_ready_edit_app.html', '#admin', 'app_id:'+id);
+	});
+	$('.delete').on('click', function(){
+		//return false;
+	});
+	$('.menu').hover(
+		function(){
+			$('ul',this).css('display','block');
+		},
+		function(){
+			$('ul',this).css('display','none');
+		}
+	);
+	$('#search input:first-of-type').inputTip({tip_val:"搜索"});
+});
+</script>
+<style>
+.track {background:url(/static/dev/image/appcenter.png) no-repeat 40px center; }
+.only_menu {background: url(/static/dev/image/addapp.png) no-repeat 15px center;}
+tr th:nth-of-type(2),tr th:nth-of-type(3),tr th:nth-of-type(4),tr th:nth-of-type(6)，tr th:nth-of-type(8){text-align: left;}
+tr th:nth-of-type(7),tr td:nth-of-type(7) {text-align: right;padding-right: 10px;}
+tr td:nth-of-type(1),tr td:nth-of-type(4),tr td:nth-of-type(5) {text-align: center;}
+.filter_menu {width:80px;background: url(/static/dev/image/filter.png) no-repeat 62px 20px;}
+.table_list thead th:last-of-type {width:60px;}
+</style>
+<p class="track">应用中心 &gt; <span>已上架应用<var>#{'(关键字： %s) %d' % (kw, len(online_apps)) if kw else '(全部)'}</var></span></p>
+<div id="appcent">
+	<div class="left_menu">
+		<a href="/admin/app_export?list_type=online_list" class="menu first_menu"><span>下载已上架应用</span></a>
+		<a href="/admin/app/review_list" class="menu last_menu">待审核应用<span>#{app_review_num}</span></a>
+		<a href="/admin/app/online_list" class="menu last_menu curr_menu">已上架应用<var>(全部)</var><span>#{online_app_num}</span></a>
+		<a href="/admin/app/not_pass_list" class="menu last_menu">未通过审核应用<span>#{app_not_pass_num}</span></a>
+		<a href="/admin/app/had_pass_list" class="menu last_menu">已通过审核应用<span>#{app_had_pass_num}</span></a>
+		<a href="/admin/app/cate_app_num" class="menu last_menu">各分类应用个数</a>
+		<a href="/admin/app/pay_within" class="menu last_menu">应用内收费的应用</a>
+		<a href="/admin/app/add_task_list" class="menu last_menu">后台更新添加队列<span>#{add_task_num}</span></a>
+		<!--<a href="/admin/app/add" class="menu only_menu">发布应用</a>-->
+	</div>
+	<div class="right_content">
+		<div id="search">
+            <form action="" method="get">
+			    <input type="text" name="q" value="" /><input type="submit" value=""/>
+            </form>
+		</div>
+		<table class="table_list">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>应用名称</th>
+					<th>版本</th>
+					<th class="filter_menu">
+						<span>应用类型</span>
+						<div class="menu">
+							<ul style="display:none;">
+								<li class="curr_cate">全部</li>
+								<li>影音</li>
+								<li>游戏</li>
+								<li>教育</li>
+								<li>生活</li>
+								<li>工具</li>
+								<li>社交</li>
+							</ul>
+						</div>
+					</th>
+					<th>更新时间</th>
+					<th>开发者</th>
+					<th>大小</th>
+					<th>上/下架</th>
+					<!--<th></th>-->
+				</tr>
+			</thead>
+			<tbody>
+			<?py for each in online_apps: ?>
+            <?py     key_start = each['key'] ?>
+            <?py     score_start = each['modified'] ?>
+                <tr>
+                    <!--<td>#{'- ' if each.get('is_dead') else ''}#{each['id']}</td>-->
+					<td>#{'<b style="color:red">- %d</b>' % each['id'] if (each.get('dead_level') or each.get('dead_level2')) else each['id']}</td>
+                    <td><a href="/admin/app/review_detail?email=#{each['email']}&package=#{each['package']}" #{'style="color:red"' if each.get('is_dead') else ''}#{each['id']}>#{each['name']}</a></td>
+                    <td>#{'<img src="/static/dev/image/dollar.png" alt="应用内付费"/>' if each.get('pay_within') else ''}V#{each['versionname']}</td>
+                    <td>#{channel_setting.DEFAULT_CATEGORY[each['category']]['text']}</td>
+                    <td>#{tm2str2(each['modified'])}</td>
+                    <td><a href="/admin/user/app_list?email=#{each['email']}">#{each['owner']}</a></td>
+                    <td>#{size2str(each['appsize'])}</td>
+					<td><a href="/admin/set_dead_level?id=#{each['id']}">上/下架</a></td>
+                    <!--<td>-->
+                        <?py if not each.get('is_dead'): ?>
+                        <!--<a href="?act=del&id=#{each['id']}" onclick="return confirm('下架后无法恢复,确定要下架吗?')" title="下架" class="delete"></a>-->
+                        <?py #endif ?>
+                    <!--</td>-->
+                </tr>
+            <?py #endfor ?>
+			</tbody>
+		</table>
+		<div class="page">
+
+
+<?py if total_page > 1 and not kw: ?>
+<?py
+page_list = []
+show_page_num = 10
+if total_page > show_page_num:
+    from_page = current_page - show_page_num/2
+    if from_page<1:
+        from_page = 1
+    #endif
+    to_page = from_page + show_page_num
+    if to_page > total_page:
+        from_page = total_page - show_page_num
+        to_page = total_page
+    #endif
+else:
+    from_page = 1
+    to_page = total_page
+#endif
+
+if total_page > 1:
+    if from_page > 1:
+        page_list.append('<span>...</span>')
+    #endif
+    for i in range(from_page, to_page+1):
+        if i == current_page:
+            page_list.append('<a href="#" class="curr_page">%d</a>' % i)
+        elif i == current_page+1:
+            page_list.append('<a href="?page=%d&key_start=%s&score_start=%d&q=%s" class="page_num">%d</a>' % (i, key_start, score_start, kw, i))
+        else:
+            page_list.append('<a href="?page=%d&q=%s" class="page_num">%d</a>' % (i, kw, i))
+        #endif
+    #endfor
+    if to_page < total_page:
+        page_list.append('<span>...</span>')
+    #endif
+#endif
+page_str = '\n'.join(page_list)
+?>
+
+
+
+        <?py if current_page > 1: ?>
+		<a href="?page=1&q=${kw}" class="page_first"></a>
+		<a href="?page=#{total_page-1}&q=${kw}" class="page_prev"></a>
+        <?py #endif ?>
+        #{page_str}
+        <?py if current_page < total_page: ?>
+		<a href="?page=#{current_page+1}&key_start=#{key_start}&score_start=#{score_start}&q=${kw}" class="page_next"></a>
+		<a href="?page=#{total_page}&q=${kw}" class="page_last"></a>
+        <?py #endif ?>
+
+<?py #endif ?>
+
+
+		</div>
+	</div>
+</div>
+
+
+
+</div>

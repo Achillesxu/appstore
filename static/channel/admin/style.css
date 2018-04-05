@@ -1,0 +1,23 @@
+@charset "utf-8";
+/* CSS Document */
+
+body{ padding:20px; margin:0 auto;font-family: Microsoft Yahei , Arial, sans-serif;font-size: 12px; background-color:#f8f8f8; width:100%; height:100%}
+ul,li{ list-style-type:none; padding:0}
+img{ border:none;}
+all{ padding:0; margin:0 0;}
+font{ font-family:Segoe UI, Lucida Grande, Verdana, Arial, Helvetica, sans-serif; }
+a{ text-decoration:none; outline:none;color:#172a88;}
+a:link{ color:#172a88;}
+a:hover{ color:#172a88;text-decoration:underline;}
+a:visited{ color:#172a88;}
+input,button,select,textarea{outline:none}
+
+#nav {margin-bottom:50px;}
+#nav li {margin: 5px 8px 5px 8px;float:left;}
+
+.scapplist li {float:left;width:145px;height:200px;margin:0 15px 20px 0;text-align:center;}
+.cap_list {}
+.cap_list li {float:left;margin:10px;}
+.cap_list li img{width:143px;height:77px;}
+.desform {width:75%;height:130px;}
+

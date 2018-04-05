@@ -1,0 +1,21 @@
+@charset "utf-8";
+/* CSS Document */
+body {padding:0 20px 20px 20px;}
+
+.home-menu {font-size: 1.2em;margin-bottom: 1em; border-bottom: 3px double #eee;}
+.home-menu .pure-menu-list {float: right;}
+
+#sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+#sortable li { margin: 3px 10px 20px 0; padding: 1px; float: left; width: 100px; height: 90px; font-size: 1em; text-align: center; }
+#sortable li img{cursor:pointer;}
+
+.sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+.sortable li { margin: 3px 10px 20px 0; padding: 1px; float: left; width: 100px; height: 90px; font-size: 1em; text-align: center; }
+.sortable li img{cursor:pointer;}
+
+#id_app_list {list-style-type:none;width:870px;}
+#id_app_list li {margin: 3px 10px 20px 0; padding: 1px; float: left; width: 100px; height: 90px; font-size: 1em;}
+
+.title_nav {color: #999;font-size: 1em; margin: .1em 0 1.1em; padding-bottom: 0;border-bottom: 3px double #eee;}
+.top_nav {color: #999;font-size: 1em;margin: .1em 0 1.1em; padding-bottom: 0;border-bottom: 3px double #eee;}
+

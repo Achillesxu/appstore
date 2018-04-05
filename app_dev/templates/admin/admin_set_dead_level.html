@@ -1,0 +1,210 @@
+<nav xmlns="http://www.w3.org/1999/html">
+	<a href="/admin/overview">总览</a>
+	<a href="/admin/appcenter" class="current">应用中心</a>
+	<a href="/admin/usercenter">用户中心</a>
+	<a href="/admin/msg">消息</a>
+	<a href="/admin/protocols">协议</a>
+</nav>
+<script>
+$(function(){
+
+
+	var radios = $('input[type=radio]');
+	radios.css('display','none');
+	radios.each(function(){
+		var name = $(this).attr('name');
+		var title = $(this).attr('title');
+		var checked = $(this).attr('checked') ? ' class="selected"' : '';
+		$(this).after('<a name="'+name+'"'+checked+'>'+title+'</a>');
+	});
+
+
+	var checkboxs = $('input[type=checkbox]');
+	checkboxs.css('display','none');
+	checkboxs.each(function(){
+		var name = $(this).attr('name');
+		var title = $(this).attr('title');
+		var checked = $(this).attr('checked') ? ' class="selected"' : '';
+		$(this).after('<a name="'+name+'"'+checked+'>'+title+'</a>');
+	});
+	checkboxs.siblings('a').on('click', function(){
+		$(this).toggleClass('selected');
+		if ($(this).hasClass('selected')){
+		    $(this).prev().attr('checked','checked');
+		    name = $(this).prev().attr('name')
+		    $('#'+name).removeAttr('checked')
+		    $('a[name="'+name+'_radio"]').removeAttr('class');
+        }else{
+            $(this).prev().removeAttr('checked');
+        }
+	});
+
+});
+</script>
+<style>
+    h1 {font-size: 2em;margin:20px 0;border-bottom: 1px solid #ccc;padding-bottom:10px;}
+    .box {padding:0 10px;}
+    input[type=radio],input[type=checkbox] {width:auto;margin: 0px;}
+    .select{display: inline-block;border:1px solid #1876b7;border-radius: 15px;height:29px;width:155px;overflow: hidden;}
+    .select:after{display: inline-block;width: 25px;height: 29px;line-height: 27px;content: "\25BC";position: absolute;right: 0px;top: 0px;pointer-events:none;font-size: 16px;color:#1876b7;background-color: #fff;}
+    .select select{appearance:none;-webkit-appearance:none;-moz-appearance: none;border: none;width: 155px;height:27px;line-height: 20px;outline:none;}
+
+    a[name=client_dead_set] {display:inline-block;margin-right:8px;width:90px;height:32px;border-radius:16px;background-color:#E1E4E9;color:#8F9399;font-size:14px;line-height:32px;text-align:center;}
+    a[name=pc_dead_set] {display:inline-block;margin-right:8px;width:90px;height:32px;border-radius:16px;background-color:#E1E4E9;color:#8F9399;font-size:14px;line-height:32px;text-align:center;}
+    a[name=client_dead_set_radio] {display:inline-block;margin-right:8px;width:90px;height:32px;border-radius:16px;background-color:#E1E4E9;color:#8F9399;font-size:14px;line-height:32px;text-align:center;}
+    a[name=pc_dead_set_radio] {display:inline-block;margin-right:8px;width:90px;height:32px;border-radius:16px;background-color:#E1E4E9;color:#8F9399;font-size:14px;line-height:32px;text-align:center;}
+
+    a[name=client_dead_set2] {display:inline-block;margin-right:8px;width:90px;height:32px;border-radius:16px;background-color:#E1E4E9;color:#8F9399;font-size:14px;line-height:32px;text-align:center;}
+    a[name=pc_dead_set2] {display:inline-block;margin-right:8px;width:90px;height:32px;border-radius:16px;background-color:#E1E4E9;color:#8F9399;font-size:14px;line-height:32px;text-align:center;}
+    a[name=client_dead_set_radio2] {display:inline-block;margin-right:8px;width:90px;height:32px;border-radius:16px;background-color:#E1E4E9;color:#8F9399;font-size:14px;line-height:32px;text-align:center;}
+    a[name=pc_dead_set_radio2] {display:inline-block;margin-right:8px;width:90px;height:32px;border-radius:16px;background-color:#E1E4E9;color:#8F9399;font-size:14px;line-height:32px;text-align:center;}
+
+    a.selected {background-color: #1876b7;color:#fff;}
+    #not_add {background:url(/static/dev/image/not_add.png) no-repeat;height:16px;font-size:16px;display: inline-block;width:90px;text-align: right;}
+</style>
+<div id="admin">
+    <p class="track">应用中心 &gt; <span>上/下架</span></p>
+    <div class="right_content">
+        <div class="right-top">
+            <a id="not_add" href="/admin/app/review_list">取消编辑</a>
+        </div>
+        <?py if msg:?>
+            <div style="background-color:#F2DEDE;color:#B94A48">#{msg}</div>
+        <?py #endif?>
+        <form class="app_mng" action="" method="post" autocomplete="off">
+            <fieldset>
+                <div style="font-size: 16px;margin:10px 2px">应用名称：<strong>#{app_name}</strong></div>
+                <div style="font-size: 13px;margin: 10px 2px; color:red">注意：选中状态表示已下架</div>
+
+                <h1>网页端下架控制：</h1>
+                <div class="box">
+                    <label>网页端：</label>
+                    <input type="radio" name="pc_dead_set_radio" id="pc_dead_set" class="pc_dead_set_radio" value="50" title="全部" #{'checked="checked"' if '50' in dead_level_list else ''} />
+                    <input type="checkbox" name="pc_dead_set" class="pc_dead_set" value="1" title="排行榜"  #{' checked="checked"' if '1' in dead_level_list else ''}/>
+                    <input type="checkbox" name="pc_dead_set" class="pc_dead_set" value="2" title="搜索"  #{' checked="checked"' if '2' in dead_level_list else ''}/>
+                    <input type="checkbox" name="pc_dead_set" class="pc_dead_set" value="3" title="更新显示"  #{' checked="checked"' if '3' in dead_level_list else ''}/>
+                </div>
+
+                <h1>普通渠道客户端下架控制：</h1>
+                <div class="box">
+                    <label>客户端：</label>
+                    <input type="radio" name="client_dead_set_radio" id="client_dead_set" class="client_dead_set_radio" value="60" title="全部" #{'checked="checked"' if '60' in dead_level_list else ''}/>
+                    <input type="checkbox" name="client_dead_set"  class="client_dead_set" value="4" title="排行榜" #{'checked="checked"' if '4' in dead_level_list else ''}/>
+                    <input type="checkbox" name="client_dead_set" class="client_dead_set" value="5" title="搜索"  #{'checked="checked"' if '5' in dead_level_list else ''}/>
+                    <input type="checkbox" name="client_dead_set" class="client_dead_set" value="6" title="更新提示"  #{'checked="checked"' if '6' in dead_level_list else ''}/>
+                </div>
+
+                <h1>秘密渠道客户端下架控制：</h1>
+                <div class="box">
+                    <label>客户端：</label>
+                    <input type="radio" name="client_dead_set_radio2" id="client_dead_set2" class="client_dead_set_radio" value="60" title="全部" #{'checked="checked"' if '60' in dead_level_list2 else ''}/>
+                    <input type="checkbox" name="client_dead_set2"  class="client_dead_set" value="4" title="排行榜" #{'checked="checked"' if '4' in dead_level_list2 else ''}/>
+                    <input type="checkbox" name="client_dead_set2" class="client_dead_set" value="5" title="搜索"  #{'checked="checked"' if '5' in dead_level_list2 else ''}/>
+                    <input type="checkbox" name="client_dead_set2" class="client_dead_set" value="6" title="更新提示"  #{'checked="checked"' if '6' in dead_level_list2 else ''}/>
+                </div>
+
+                <hr style="margin-bottom:20px;color: #ccc;"/>
+                <input type="hidden" name="act" value="control">
+                <button type="submit"  value="1">提交</button>
+            </fieldset>
+
+        </form>
+    </div>
+    <p class="track">警方上报信息汇总, 请谨慎提交</p>
+    <div class="right_content">
+        <form class="app_mng" action="" method="post">
+            <fieldset>
+                <h1>app相关信息</h1>
+                <div class="box">
+                    <label style="width: 200px; text-align:left">应用名称: </label>
+                    <input type="text" name="app_name" value="#{app_info['name']}" placeholder="#{app_info['name']}" readonly>
+                </div>
+                <div class="box">
+                    <label style="width: 200px; text-align:left">应用类型: </label>
+                    <input type="text" name="app_type" value="#{app_info['category']}" placeholder="#{app_info['category']}" readonly>
+                </div>
+                <div class="box">
+                    <label style="width: 200px; text-align:left">应用所属公司: </label>
+                    <?py if dev_info['b_name']:?>
+                        <input type="text" name="app_company" value="#{dev_info['b_name']}" placeholder="#{dev_info['b_name']}" readonly>
+                    <?py else:?>
+                        <input type="text" name="app_company" value="#{dev_info['p_name']}" placeholder="#{dev_info['p_name']}" readonly>
+                    <?py #endif?>
+                </div>
+                <div class="box">
+                    <label style="width: 200px; text-align:left">证件号码: </label>
+                    <?py if dev_info['b_id_num']:?>
+                        <input type="text" name="company_number" value="#{dev_info['b_id_num']}" placeholder="#{dev_info['b_id_num']}" readonly>
+                    <?py else:?>
+                        <input type="text" name="company_number" value="#{dev_info['p_id_num']}" placeholder="#{dev_info['p_id_num']}" readonly>
+                    <?py #endif?>
+                </div>
+                <div class="box">
+                    <label style="width: 200px; text-align:left">应用版本号: </label>
+                    <input type="text" name="version_number" value="#{app_info['versioncode']}" placeholder="#{app_info['versioncode']}" readonly>
+                </div>
+                <div class="box">
+                    <label style="width: 200px; text-align:left">安装包文件名: </label>
+                    <input type="text" name="filename" value="#{app_info['slug_url']}" placeholder="#{app_info['slug_url']}" readonly>
+                </div>
+                <div class="box" >
+                    <label style="width: 200px; text-align:left">网警所在城市标示: </label>
+                    <input type="text" name="citysign" value="YUE0002" placeholder="YUE0002" readonly>
+                </div>
+                <div class="box">
+                    <label style="width: 200px; text-align:left">应用发布时间: </label>
+                    <input type="text" name="send_time" value="#{app_info['updatetime']}" placeholder="#{app_info['updatetime']}" readonly>
+                </div>
+                <div class="box">
+                    <label style="width: 200px; text-align:left">应用下载链接: </label>
+                    <input type="text" name="app_url" value="http://#{domain}/#{app_info['slug_url']}" placeholder="http://#{domain}/#{app_info['slug_url']}" readonly>
+                </div>
+                <div class="box">
+                    <label style="width: 200px; text-align:left">应用开发者: </label>
+                    <?py if dev_info['b_name']:?>
+                        <input type="text" name="develop_user" value="#{dev_info['b_name']}" placeholder="#{dev_info['b_name']}" readonly>
+                    <?py else:?>
+                        <input type="text" name="develop_user" value="#{dev_info['p_name']}" placeholder="#{dev_info['p_name']}" readonly>
+                    <?py #endif?>
+                </div>
+                <input type="hidden" name="act" value="submit">
+                <button type="submit" value="1">提交</button>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+<!--
+                <h1>普通渠道下架控制：</h1>
+                <div class="box">
+                    <label>客户端：</label>
+                    <input type="radio" name="client_dead_set_radio" id="client_dead_set" class="client_dead_set_radio" value="60" title="全部" #{'checked="checked"' if '60' in dead_level_list else ''}/>
+                    <input type="checkbox" name="client_dead_set"  class="client_dead_set" value="4" title="排行榜" #{'checked="checked"' if '4' in dead_level_list else ''}/>
+                    <input type="checkbox" name="client_dead_set" class="client_dead_set" value="5" title="搜索"  #{'checked="checked"' if '5' in dead_level_list else ''}/>
+                    <input type="checkbox" name="client_dead_set" class="client_dead_set" value="6" title="更新提示"  #{'checked="checked"' if '6' in dead_level_list else ''}/>
+                </div>
+                <div class="box">
+                    <label>网页端：</label>
+                    <input type="radio" name="pc_dead_set_radio" id="pc_dead_set" class="pc_dead_set_radio" value="50" title="全部" #{'checked="checked"' if '50' in dead_level_list else ''} />
+                    <input type="checkbox" name="pc_dead_set" class="pc_dead_set" value="1" title="排行榜"  #{' checked="checked"' if '1' in dead_level_list else ''}/>
+                    <input type="checkbox" name="pc_dead_set" class="pc_dead_set" value="2" title="搜索"  #{' checked="checked"' if '2' in dead_level_list else ''}/>
+                    <input type="checkbox" name="pc_dead_set" class="pc_dead_set" value="3" title="更新显示"  #{' checked="checked"' if '3' in dead_level_list else ''}/>
+                </div>
+
+                <h1>秘密渠道下架控制：</h1>
+                <div class="box">
+                    <label>客户端：</label>
+                    <input type="radio" name="client_dead_set_radio2" id="client_dead_set2" class="client_dead_set_radio" value="60" title="全部" #{'checked="checked"' if '60' in dead_level_list2 else ''}/>
+                    <input type="checkbox" name="client_dead_set2"  class="client_dead_set" value="4" title="排行榜" #{'checked="checked"' if '4' in dead_level_list2 else ''}/>
+                    <input type="checkbox" name="client_dead_set2" class="client_dead_set" value="5" title="搜索"  #{'checked="checked"' if '5' in dead_level_list2 else ''}/>
+                    <input type="checkbox" name="client_dead_set2" class="client_dead_set" value="6" title="更新提示"  #{'checked="checked"' if '6' in dead_level_list2 else ''}/>
+                </div>
+                <div class="box">
+                    <label>网页端：</label>
+                    <input type="radio" name="pc_dead_set_radio2" id="pc_dead_set2" class="pc_dead_set_radio" value="50" title="全部" #{'checked="checked"' if '50' in dead_level_list2 else ''} />
+                    <input type="checkbox" name="pc_dead_set2" class="pc_dead_set" value="1" title="排行榜"  #{' checked="checked"' if '1' in dead_level_list2 else ''}/>
+                    <input type="checkbox" name="pc_dead_set2" class="pc_dead_set" value="2" title="搜索"  #{' checked="checked"' if '2' in dead_level_list2 else ''}/>
+                    <input type="checkbox" name="pc_dead_set2" class="pc_dead_set" value="3" title="更新显示"  #{' checked="checked"' if '3' in dead_level_list2 else ''}/>
+                </div>
+
+-->

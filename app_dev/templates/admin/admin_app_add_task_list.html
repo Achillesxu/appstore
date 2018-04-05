@@ -1,0 +1,73 @@
+<nav>
+	<a href="/admin/overview">总览</a>
+	<a href="/admin/appcenter" class="current">应用中心</a>
+	<a href="/admin/usercenter">用户中心</a>
+	<a href="/admin/msg">消息</a>
+	<a href="/admin/protocols">协议</a>
+</nav>
+<div id="admin">
+
+<script>
+$(function(){
+	$('.table_list').on('mouseover', 'tbody tr', function(){
+		$(this).siblings('.curr_tr').removeClass('curr_tr');
+		$(this).removeClass('curr_tr');
+		$(this).addClass('curr_tr');
+	});
+	$('.table_list').on('click', 'tbody tr', function(){
+		var id = $('td:first', this).text()
+		//loadUrl('admin/form_review_edit_app.html', '#admin', 'app_id:'+id);
+	});
+});
+</script>
+<style>
+.track {background:url(/static/dev/image/appcenter.png) no-repeat 40px center; }
+.only_menu {background: url(/static/dev/image/addapp.png) no-repeat 15px center;}
+tr th:nth-of-type(2),tr th:nth-of-type(3),tr th:nth-of-type(6),tr th:nth-of-type(7) {text-align: left;}
+tr th:nth-of-type(7),tr td:nth-of-type(7) {text-align: right;padding-right: 10px;}
+tr td:nth-of-type(1),tr td:nth-of-type(4),tr td:nth-of-type(5) {text-align: center;}
+</style>
+<p class="track">应用中心 &gt; <span>后台队列任务</span></p>
+<div id="appcent">
+	<div class="left_menu">
+		<a href="/admin/app/review_list" class="menu first_menu">待审核应用<span>#{app_review_num}</span></a>
+		<a href="/admin/app/online_list" class="menu last_menu">已上架应用<span>#{online_app_num}</span></a>
+		<a href="/admin/app/not_pass_list" class="menu last_menu">未通过审核应用<span>#{app_not_pass_num}</span></a>
+		<a href="/admin/app/had_pass_list" class="menu last_menu">已通过审核应用<span>#{app_had_pass_num}</span></a>
+		<a href="/admin/app/cate_app_num" class="menu last_menu">各分类应用个数</a>
+		<a href="/admin/app/pay_within" class="menu last_menu">应用内收费的应用</a>
+		<a href="/admin/app/add_task_list" class="menu last_menu curr_menu">后台更新添加队列<span>#{add_task_num}</span></a>
+		<!--<a href="/admin/app/add" class="menu only_menu">发布应用</a>-->
+	</div>
+	<div class="right_content">
+		<table class="table_list">
+			<thead>
+				<tr>
+					<th>应用名称</th>
+					<th>开发者</th>
+					<th>email</th>
+					<th>更新时间</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+            <?py for each in apps['apps']: ?>
+				<tr>
+					<td>#{each.get('name')}</td>
+					<td>#{each.get('owner')}</td>
+					<td>#{each.get('email')}</td>
+					<td></td>
+					<td>#{each.get('key')}</td>
+				</tr>
+            <?py #endfor ?>
+			</tbody>
+		</table>
+		<div class="page">
+
+
+		</div>
+	</div>
+</div>
+
+
+</div>

@@ -1,0 +1,75 @@
+<script>
+$(function(){
+	//$('#email').inputTip({tip_val:"示例：example@7po.com"});
+	//$('#password').inputTip({tip_val:"示例：7PO_123"});
+	//$('#password2').inputTip({tip_val:"示例：7PO_123"});
+	$('form').validate({
+		errorElement:'em',
+		errorClass:'icon_err',
+		onkeyup:false,
+		rules: {  
+			email: {
+				required: true,
+				email: true,
+			},
+			password: {
+				required: true,
+				minlength: 6,
+				maxlength: 18
+			},
+			password2: {
+				equalTo: '#password'
+			}
+		},
+		messages: {
+			email: {
+				required: '邮箱地址不能为空',
+				email: '请输入正确的邮箱地址（例如 7po@7po.com）',
+				remote: '当前邮箱地址已被注册，请用新的邮箱'
+			},
+			password: {
+				required: '密码不能为空',
+				minlength: '密码长度在6-18位字符之间',
+				maxlength: '密码长度在6-18位字符之间'
+			},
+			password2: {
+				equalTo: '密码与确认密码值不相同'
+			}
+		}
+	});
+});
+
+function agree_select(){
+    var selected = $("#agree").prop("checked");
+    if(selected){
+        $("#sbt").attr('disabled', false);
+        $("#sbt").css({"background-color":"#1876B7" ,"border":"#1876B7", "cursor": "pointer"});
+    }else{
+        $("#sbt").attr('disabled', true);
+        $("#sbt").css({"background-color":"#CCC" ,"border":"#CCC", "cursor": "auto"});
+    }
+}
+</script>
+<div id="register">
+	<article>
+		<h1>注册奇珀开发者中心帐号</h1>
+		<p>请您通过常用邮箱来完成奇珀开发者中心的帐号注册，如果您已经拥有帐号，<a href="/user/login">点击登录</a></p>
+	</article>
+    <?py if check_error: ?>
+    <p style="color:red">#{check_error}</p>
+    <?py #endif ?>
+
+	<form method="post" action="/user/register" novalidate="novalidate">
+		#{xsrf_form_html()}
+		<label for="email">电子邮箱地址</label><input type="email" name="email" id="email"/>
+		<span class="msg">可用于登陆或找回密码</span>
+		<label for="password">设定密码</label><input type="password" name="password" id="password"/>
+		<span class="msg">请输入6-18位字符</span>
+		<label for="password2">确认密码</label><input type="password" name="password2" id="password2"/>
+		<p class="msg" id="msg" style="line-height: 18px;margin-bottom:30px;">
+            <input type="checkbox" id="agree" name="agree"  onchange="agree_select()" value="1" style="float: left;margin: 0;padding: 0;width: 30px;"/>
+            我已阅读并完全接受 <br/><a href="/doc/useragreement">《奇珀开发者协议》</a>
+        </p>
+		<button id="sbt" type="submit" style="background-color: #CCC;border: 1px solid #CCC;cursor:auto;" disabled>注册</button>
+	</form>
+</div>

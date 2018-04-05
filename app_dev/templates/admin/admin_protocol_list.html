@@ -1,0 +1,68 @@
+<nav>
+	<a href="/admin/overview">总览</a>
+	<a href="/admin/appcenter">应用中心</a>
+	<a href="/admin/usercenter">用户中心</a>
+	<a href="/admin/msg">消息</a>
+    <a href="/admin/protocols" class="current">协议</a>
+</nav>
+<div id="admin">
+    <script>
+    $(function(){
+        $('.table_list').on('mouseover', 'tbody tr', function(){
+            $(this).siblings('.curr_tr').removeClass('curr_tr');
+            $(this).removeClass('curr_tr');
+            $(this).addClass('curr_tr');
+        });
+        $('.table_list').on('click', 'tbody tr', function(){
+            var id = $('td:first', this).text()
+            loadUrl('admin/form_user_review.html', '#admin', 'user_name:'+id);
+        });
+        $('#search input:first-of-type').inputTip({tip_val:"搜索"});
+    });
+    </script>
+    <style>
+        .track {background:url(/static/dev/image/usercenter.png) no-repeat 40px center; }
+        .dev_type a {display:inline-block;width:200px;height:36px;line-height:36px;font-size:14px;font-weight:bold;text-align:center;border-radius:28px;border:1px solid #1876B7;}
+        .dev_type a:nth-of-type(1) {color:#1876B7;}
+        .dev_type a:nth-of-type(2) {background-color:#1876B7;color:#FFF;right:0px;}
+        .only_menu {background:url(/static/dev/image/addapp.png) no-repeat 15px center;}
+        a.curr_menu {background-color: #1876b7;color: #fff;}
+        tr th:nth-of-type(1),tr th:nth-of-type(2),tr th:nth-of-type(4),tr th:nth-of-type(6) {text-align: center;}
+        tr td:nth-of-type(1),tr td:nth-of-type(2),tr td:nth-of-type(5) {text-align: center;}
+        .filter_menu {width:80px;background: url(/static/dev/image/filter.png) no-repeat 62px 20px;}
+        #not_add {background:url(/static/dev/image/not_add.png) no-repeat;height:16px;font-size:16px;display: inline-block;width:90px;text-align: right;}
+    </style>
+    <p class="track">协议 &gt; <span>协议列表</span></p>
+    <div id="appcent">
+        <div class="left_menu">
+            <!--<a href="/admin/user/review_list" class="menu first_menu">待审核用户</a>-->
+            <a href="/admin/protocols" class="menu last_menu  curr_menu">协议列表</a>
+        </div>
+        <div class="right_content">
+            <?py if protocol_size >= 0:?>
+            <div class="right-top">
+                <a id="not_add" href="/admin/add_protocol">新增</a>
+            </div>
+            <?py #endif?>
+            <table class="table_list">
+                <thead>
+                    <tr>
+                        <th>协议名称</th>
+                        <th>授权时间</th>
+                        <th>删除</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?py for each in protocols: ?>
+                    <tr>
+                        <td><a href="/admin/edit_protocol?prokey=#{each['key']}">#{each['name']}</a></td>
+                        <td>#{each['date']}</td>
+                        <td><a href="/admin/protocols?act=del&key=#{each['key']}" onclick="javascript:return confirm('您确定要删除吗?')">删除协议</a>
+                        </td>
+                    </tr>
+                <?py #endfor ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

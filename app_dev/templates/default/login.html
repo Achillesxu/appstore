@@ -1,0 +1,41 @@
+<script>
+$(function(){
+	$('#email').inputTip({tip_val:"用户名"});
+	$('#password').inputTip({tip_val:"密码"});
+	$('form').validate({
+		errorElement:'span',
+		errorClass:'err',
+		onkeyup:false,
+		rules: {  
+			email: {
+				email: true
+			},
+			password: {
+				minlength: 6,
+				maxlength: 18
+			}
+		},
+		messages: {
+			email: {
+				email: '请输入正确的用户名'
+			},
+			password: {
+				minlength: '密码长度在6-18位字符之间',
+				maxlength: '密码长度在6-18位字符之间'
+			}
+		}
+	});
+});
+</script>
+
+<div id="login">
+	<form method="post" action="/user/login" novalidate="novalidate">
+		#{xsrf_form_html()}
+        <?py if check_error: ?>
+        <span class="err" style="display: block;">#{check_error}</span>
+        <?py #endif ?>
+		<input type="email" name="email" id="email"/>
+		<input type="password" name="password" id="password"/>
+		<button name="login" type="submit">登 录</button>
+	</form>
+</div>

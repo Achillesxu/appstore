@@ -1,0 +1,69 @@
+<nav>
+	<a href="/user/my_apps">我的应用</a>
+	<a href="/user/msg" class="current">消息#{'<var>(%d)</var>' % current_user['new_msg'] if current_user.get('new_msg', 0) else ''}</a>
+	<a href="/user/setting">设置</a>
+    <?py include('nav_ad.html') ?>
+</nav>
+<div id="user">
+
+<script>
+$(function(){
+    $("#btn_goback").click(function(){
+        location.href= '/user/msg';
+    });
+    $("#btn_del").click(function(){
+        location.href= '/user/msg_detail?key=#{msg['key']}&act=del';
+    });
+});
+</script>
+<style>
+.track {background:url(/static/dev/image/appcenter.png) no-repeat 40px center; }
+.only_menu {background: url(/static/dev/image/addapp.png) no-repeat 15px center;}
+tr th:nth-of-type(2),tr th:nth-of-type(3) {text-align: left;}
+tr th:nth-of-type(3) {width:200px;}
+tr th:nth-of-type(7),tr td:nth-of-type(7) {text-align: right;padding-right: 10px;}
+tr td:nth-of-type(4),tr td:nth-of-type(5) {text-align: center;}
+tr td:nth-of-type(1),tr th:nth-of-type(1) {padding-left:40px;}
+.filter_menu {width:80px;background: url(/static/dev/image/filter.png) no-repeat 62px 20px;}
+.table_list thead th:last-of-type {width:40px;}
+.right_content {width:900px;margin-left:40px;}
+.no {color:red;}
+.do {color:#1876b7;}
+.yes {color:#000;}
+.table_list span {display:inline;margin:auto;}
+button {width:120px;}
+.right-top {top:-70px;right:0px;}
+.right-top button:nth-of-type(2) {margin-left:20px;}
+.info_title {border:1px solid #EEE;padding:10px 20px;line-height:24px;font-size:14px;}
+.info_content {padding:30px 60px;font-size:14px;line-height:24px;min-height:300px;}
+.info_history {background-color:#f2f2f2; height:28px;margin-bottom:80px;line-height:28px;font-size:14px;}
+.prev_info {margin-left:30px;padding-left:20px;background:url(/static/dev/image/prev_info.png) no-repeat left center;}
+.next_info {margin-right:30px;float:right;padding-right:20px;background:url(/static/dev/image/next_info.png) no-repeat right center;}
+</style>
+<p class="track">消息 &gt; <span>#{msg['title']}</span></p>
+
+<div class="right_content">
+	<div class="right-top">
+		<button type="button" id="btn_goback">返回</button>
+		<button type="button" id="btn_del">删除</button>
+	</div>
+	<div class="info_title">
+		<p>主题：#{msg['title']}</p>
+		<p>时间：#{tm2str(msg['sendtime'])}</p>
+		<p>发件人：#{msg.get('from_user_name', 'admin')}</p>
+	</div>
+	<div class="info_content">
+		<p>#{nl2br(msg['content'])}</p>
+	</div>
+</div>
+<div class="info_history">
+    <?py if nearly_msg['new']: ?>
+	<a href="/user/msg_detail?key=#{nearly_msg['new']['key']}" class="prev_info"><var class="no"></var>#{nearly_msg['new']['title']}</a>
+    <?py #endif ?>
+    <?py if nearly_msg['old']: ?>
+	<a href="/user/msg_detail?key=#{nearly_msg['old']['key']}" class="next_info"><var class="yes"></var>#{nearly_msg['old']['title']}</a>
+    <?py #endif ?>
+</div>
+
+
+</div>

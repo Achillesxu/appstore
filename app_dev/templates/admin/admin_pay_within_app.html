@@ -1,0 +1,116 @@
+<nav>
+	<a href="/admin/overview">总览</a>
+	<a href="/admin/appcenter" class="current">应用中心</a>
+	<a href="/admin/usercenter">用户中心</a>
+	<a href="/admin/msg">消息</a>
+	<a href="/admin/protocols">协议</a>
+</nav>
+<div id="admin">
+
+
+<script>
+$(function(){
+	$('.table_list').on('mouseover', 'tbody tr', function(){
+		$(this).siblings('.curr_tr').removeClass('curr_tr');
+		$(this).removeClass('curr_tr');
+		$(this).addClass('curr_tr');
+		$('.table_list .delete').css('display','none');
+		$('.delete', this).css('display','block');
+	});
+	$('.table_list').on('click', 'tbody tr', function(){
+		var id = $('td:first', this).text()
+		//loadUrl('admin/form_ready_edit_app.html', '#admin', 'app_id:'+id);
+	});
+	$('.delete').on('click', function(){
+		//return false;
+	});
+	$('.menu').hover(
+		function(){
+			$('ul',this).css('display','block');
+		},
+		function(){
+			$('ul',this).css('display','none');
+		}
+	);
+});
+</script>
+<style>
+.track {background:url(/static/dev/image/appcenter.png) no-repeat 40px center; }
+.only_menu {background: url(/static/dev/image/addapp.png) no-repeat 15px center;}
+tr th:nth-of-type(2),tr th:nth-of-type(3),tr th:nth-of-type(4),tr th:nth-of-type(6)，tr th:nth-of-type(8){text-align: left;}
+tr th:nth-of-type(7),tr td:nth-of-type(7) {text-align: right;padding-right: 10px;}
+tr td:nth-of-type(1),tr td:nth-of-type(4),tr td:nth-of-type(5) {text-align: center;}
+.filter_menu {width:80px;background: url(/static/dev/image/filter.png) no-repeat 62px 20px;}
+.table_list thead th:last-of-type {width:60px;}
+</style>
+<p class="track">应用中心 &gt; <span>#{title}</span></p>
+<div id="appcent">
+	<div class="left_menu">
+		<a href="/admin/app_export?list_type=pay_within" class="menu first_menu"><span>下载内收费应用</span></a>
+		<a href="/admin/app/review_list" class="menu last_menu">待审核应用<span>#{app_review_num}</span></a>
+		<a href="/admin/app/online_list" class="menu last_menu">已上架应用<var>(全部)</var><span>#{online_app_num}</span></a>
+		<a href="/admin/app/not_pass_list" class="menu last_menu">未通过审核应用<span>#{app_not_pass_num}</span></a>
+		<a href="/admin/app/had_pass_list" class="menu last_menu">已通过审核应用<span>#{app_had_pass_num}</span></a>
+		<a href="/admin/app/cate_app_num" class="menu last_menu">各分类应用个数</a>
+		<a href="/admin/app/pay_within" class="menu last_menu curr_menu">应用内收费的应用</a>
+		<a href="/admin/app/add_task_list" class="menu last_menu">后台更新添加队列<span>#{add_task_num}</span></a>
+		<!--<a href="/admin/app/add" class="menu only_menu">发布应用</a>-->
+	</div>
+	<div class="right_content">
+		<table class="table_list">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>应用名称</th>
+					<th>版本</th>
+					<th class="filter_menu">
+						<span>应用类型</span>
+						<div class="menu">
+							<ul style="display:none;">
+								<li class="curr_cate">全部</li>
+								<li>影音</li>
+								<li>游戏</li>
+								<li>教育</li>
+								<li>生活</li>
+								<li>工具</li>
+								<li>社交</li>
+							</ul>
+						</div>
+					</th>
+					<th>更新时间</th>
+					<th>开发者</th>
+					<th>大小</th>
+					<th>上/下架</th>
+				</tr>
+			</thead>
+			<tbody>
+			<?py for each in apps: ?>
+            <?py     key_start = each['index_key'] ?>
+            <?py     score_start = each['index_score'] ?>
+                <tr>
+										<td>#{'<b style="color:red">- %d</b>' % each['id'] if (each.get('dead_level') or each.get('dead_level2')) else each['id']}</td>
+                    <td><a href="/admin/app/review_detail?email=#{each['email']}&package=#{each['package']}" #{'style="color:red"' if each.get('is_dead') else ''}#{each['id']}>#{each['name']}</a></td>
+                    <td>#{'<img src="/static/dev/image/dollar.png" alt="应用内付费"/>' if each.get('pay_within') else ''}V#{each['versionname']}</td>
+                    <td>#{channel_setting.DEFAULT_CATEGORY[each['category']]['text']}</td>
+                    <td>#{tm2str2(each['modified'])}</td>
+                    <td><a href="/admin/user/app_list?email=#{each['email']}">#{each['owner']}</a></td>
+                    <td>#{size2str(each['appsize'])}</td>
+										<td><a href="/admin/set_dead_level?id=#{each['id']}">上/下架</a></td>
+                </tr>
+            <?py #endfor ?>
+			</tbody>
+		</table>
+		<div class="page">
+			<?py if key_start_next and score_start_next: ?>
+			<a href="?key_start_next=#{key_start_prev}&score_start_next=#{score_start_prev}" class="page_prev"></a>
+			<?py #endif ?>
+			<?py if len(apps) == 15: ?>
+			<a href="?key_start_prev=#{key_start_next}&score_start_prev=#{score_start_next}&key_start_next=#{key_start}&score_start_next=#{score_start}" class="page_next"></a>
+			<?py #endif ?>
+		</div>
+	</div>
+</div>
+
+
+
+</div>

@@ -1,0 +1,33 @@
+input {padding:4px;margin-bottom:4px;}
+.clear{clear:both;}
+.padding_tb_20{padding:20px 0 20px 0;}
+.padding_top_20{padding-top:20px;}
+.margin_top_20{margin-top:20px;}
+.cat_tj_app{margin:0 30px 20px 0;float:left;}
+.game_sub_apps{margin:0 20px 20px 0;float:left;}
+.edit_area_border{padding: 20px 40px 20px 60px;border: 1px #ccc solid;}
+.uploadify-button2 {background-color:#008287;border:1px #ccc solid;padding:5px;cursor:pointer;}
+.uploadify2:hover .uploadify-button2 {background-color:#008287;cursor:pointer;}
+#sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+#sortable li { margin: 3px 10px 20px 0; padding: 1px; float: left; width: 100px; height: 90px; font-size: 1em; text-align: center; }
+#sortable li img{cursor:pointer;}
+
+.sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+.sortable li { margin: 3px 10px 20px 0; padding: 1px; float: left; width: 100px; height: 90px; font-size: 1em; text-align: center; }
+.sortable li img{cursor:pointer;}
+
+#id_app_list {list-style-type:none;width:870px;}
+#id_app_list li {margin: 3px 10px 20px 0; padding: 1px; float: left; width: 100px; height: 90px; font-size: 1em;}
+.box {display: block;border:1px #ccc solid;}
+.mb10 {margin-bottom:10px;}
+.lfloat {float: left;}
+.rfloat {float: right;}
+.big_icon_wrap {width:280px;height:280px;display:block;background-color:#f2f2f2;}
+.big_icon_wrap img {width:280px;height:280px;}
+.small_icon_wrap {width:140px;height:140px;display:block;background-color:#f2f2f2;}
+.small_icon_wrap img {width:140px;height:140px;}
+.metro .grid .row .sanbox {float:left;margin-left:0;margin-right:20px;background-color:#e2e2e2;margin-bottom:20px;padding:0px;}
+.gray {color:#999999;}
+
+.element-menu {list-style:none;}
+.metro .tab-control .tabs>li>a {padding:5px 5px;}

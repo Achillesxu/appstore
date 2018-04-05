@@ -1,0 +1,47 @@
+<nav>
+	<a href="/admin/overview" class="current">总览</a>
+	<a href="/admin/appcenter">应用中心</a>
+	<a href="/admin/usercenter">用户中心</a>
+	<a href="/admin/msg">消息</a>
+	<a href="/admin/protocols">协议</a>
+</nav>
+<div id="admin">
+
+<style>
+.track {background:url(/static/dev/image/home.png) no-repeat 40px center; }
+#overview {background-color:#f8f8f8;height:485px;}
+#overview dl {position:absolute;}
+#overview dl:first-of-type {top:40px;left:80px;width:310px;}
+#overview dl:last-of-type {top:40px;right:80px;width:423px;float}
+#overview>a {position:absolute;top:403px;right:80px;}
+#overview * {font-size: 18px;color: #FFF;}
+#overview dt, #overview dd {height:64px;}
+#overview dt {background-color:#B76767; text-align: center;line-height: 64px;}
+#overview dd {background-color:#1876B7;margin-top:2px;}
+#overview dl a {display:block;line-height: 64px;padding-left: 30px;}
+#overview a span {display: inline;background-color: #FFF;border-radius: 20px;padding:0px 8px;color: #1876B7;font-size:17px;line-height: 24px;float: right;margin-top: 22px;margin-right: 35px;margin-left:auto;}
+#overview dd p {width: 200px;display:inline-block;line-height: 64px;padding-left: 30px;font-size: 16px;}
+#overview dd p span {display: inline;margin-left: auto;margin-left:35px; font-size: 17px;}
+#overview .detail {margin-top:0px;background-color: #ACCDE4;}
+#overview>a {display: inline-block;background-color: #1876B7; width:280px; height:64px;line-height: 64px;text-align: center;}
+</style>
+	<p class="track">总览</p>
+	<div id="overview">
+		<dl>
+			<dt>待审核事项</dt>
+			<dd><a href="/admin/app/review_list">待审核应用<span>#{overview['app_review_num']}</span></a></dd>
+			<dd><a href="/admin/user/review_list">等审核开发者<span>#{overview['user_review_num']}</span></a></dd>
+		</dl>
+		<dl>
+			<dt>统计</dt>
+			<dd><a href="/admin/app/online_list">应用<span>#{overview['online_app_num']}</span></a></dd>
+			<dd><a href="/admin/user/info_list">开发者<span>#{overview['developer_num']}</span></a></dd>
+			<dd class="detail">
+				<p>个人开发者<span>#{overview['developer_person_num']}</span></p>
+				<p>企业开发者<span>#{overview['developer_biz_num']}</span></p>
+			</dd>
+			<dd><a href="/admin/user/not_idcard_info_list">未上传手持身份证开发者<span>#{overview['not_handheld_id_card_num']}</span></a></dd>
+		</dl>
+		<a href="#">发布应用</a>
+	</div>
+</div>

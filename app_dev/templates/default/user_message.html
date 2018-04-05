@@ -1,0 +1,137 @@
+<nav>
+	<a href="/user/my_apps">我的应用</a>
+	<a href="/user/msg" class="current">消息#{'<var>(%d)</var>' % current_user['new_msg'] if current_user.get('new_msg', 0) else ''}</a>
+	<a href="/user/setting">设置</a>
+    <?py include('nav_ad.html') ?>
+</nav>
+<div id="user">
+
+<script>
+$(function(){
+	$('.table_list').on('mouseover', 'tbody tr', function(){
+		$(this).siblings('.curr_tr').removeClass('curr_tr');
+		$(this).removeClass('curr_tr');
+		$(this).addClass('curr_tr');
+		$('.table_list .delete').css('display','none');
+		$('.delete', this).css('display','block');
+	});
+	$('.table_list').on('click', 'tbody tr', function(){
+		var id = $('td:first', this).text()
+		loadUrl('user/info_content.html', '#user', 'app_name:'+id);
+	});
+	$('.delete').on('click', function(){
+		//return false;
+	});
+	$('.menu').hover(
+		function(){
+			$('ul',this).css('display','block');
+		},
+		function(){
+			$('ul',this).css('display','none');
+		}
+	);
+});
+</script>
+<style>
+.track {background:url(/static/dev/image/appcenter.png) no-repeat 40px center; }
+.only_menu {background: url(/static/dev/image/addapp.png) no-repeat 15px center;}
+tr th:nth-of-type(2),tr th:nth-of-type(3) {text-align: left;}
+tr th:nth-of-type(3) {width:200px;}
+tr th:nth-of-type(7),tr td:nth-of-type(7) {text-align: right;padding-right: 10px;}
+tr td:nth-of-type(4),tr td:nth-of-type(5) {text-align: center;}
+tr td:nth-of-type(1),tr th:nth-of-type(1) {padding-left:40px;}
+.filter_menu {width:80px;background: url(/static/dev/image/filter.png) no-repeat 62px 20px;}
+.table_list thead th:last-of-type {width:40px;}
+.right_content {margin-left:40px;}
+.table_list {width:900px;}
+.no {color:red;background:url(/static/dev/image/email_2.png) no-repeat;padding-left:20px;}
+.do {color:#1876b7;}
+.yes {color:#000;background:url(/static/dev/image/email_1.png) no-repeat;padding-left:20px;}
+.table_list span {display:inline;margin:auto;}
+button {width:120px;}
+</style>
+<p class="track">消息 (#{total_num})</p>
+
+<div class="right_content">
+	<table class="table_list">
+		<thead>
+			<tr>
+				<th>主题</th>
+				<th>时间</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+        <?py for each in my_msgs: ?>
+        <?py     key_start = each['key'] ?>
+			<tr>
+				<td><var class="#{'no' if each['flag']==1 else 'yes'}"></var><a href="/user/msg_detail?key=#{each['key']}">${each['title']}<span> -${each['content'][:20]}...</span></a></td>
+				<td>#{time_from_now(each['sendtime'])}</td>
+				<td><a href="/user/msg_detail?key=#{each['key']}&act=del" class="delete"></a></td>
+			</tr>
+        <?py #endfor ?>
+		</tbody>
+	</table>
+	<div class="page">
+
+
+<?py if total_page > 1: ?>
+<?py
+page_list = []
+show_page_num = 10
+if total_page > show_page_num:
+    from_page = current_page - show_page_num/2
+    if from_page<1:
+        from_page = 1
+    #endif
+    to_page = from_page + show_page_num
+    if to_page > total_page:
+        from_page = total_page - show_page_num
+        to_page = total_page
+    #endif
+else:
+    from_page = 1
+    to_page = total_page
+#endif
+
+if total_page > 1:
+    if from_page > 1:
+        page_list.append('<span>...</span>')
+    #endif
+    for i in range(from_page, to_page+1):
+        if i == current_page:
+            page_list.append('<a href="#" class="curr_page">%d</a>' % i)
+        elif i == current_page+1:
+            page_list.append('<a href="?page=%d&key_start=%s" class="page_num">%d</a>' % (i, key_start, i))
+        else:
+            page_list.append('<a href="?page=%d" class="page_num">%d</a>' % (i, i))
+        #endif
+    #endfor
+    if to_page < total_page:
+        page_list.append('<span>...</span>')
+    #endif
+#endif
+page_str = '\n'.join(page_list)
+?>
+
+
+
+        <?py if current_page > 1: ?>
+		<a href="?page=1" class="page_first"></a>
+		<a href="?page=#{current_page-1}" class="page_prev"></a>
+        <?py #endif ?>
+        #{page_str}
+        <?py if current_page < total_page: ?>
+		<a href="?page=#{current_page+1}&key_start=#{key_start}" class="page_next"></a>
+		<a href="?page=#{total_page}" class="page_last"></a>
+        <?py #endif ?>
+
+<?py #endif ?>
+
+
+
+	</div>
+</div>
+
+
+</div>

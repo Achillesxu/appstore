@@ -1,0 +1,155 @@
+<nav>
+	<a href="/admin/overview">总览</a>
+	<a href="/admin/appcenter">应用中心</a>
+	<a href="/admin/usercenter" class="current">用户中心</a>
+	<a href="/admin/msg">消息</a>
+	<a href="/admin/protocols">协议</a>
+</nav>
+<div id="admin">
+<script>
+$(function(){
+	$('.table_list').on('mouseover', 'tbody tr', function(){
+		$(this).siblings('.curr_tr').removeClass('curr_tr');
+		$(this).removeClass('curr_tr');
+		$(this).addClass('curr_tr');
+	});
+	$('.table_list').on('click', 'tbody tr', function(){
+		var id = $('td:first', this).text()
+		loadUrl('admin/form_user_review.html', '#admin', 'user_name:'+id);
+	});
+	$('#search input:first-of-type').inputTip({tip_val:"搜索"});
+});
+</script>
+<style>
+.track {background:url(/static/dev/image/usercenter.png) no-repeat 40px center; }
+.only_menu {background: url(/static/dev/image/addapp.png) no-repeat 15px center;}
+tr th:nth-of-type(2),tr th:nth-of-type(3),tr th:nth-of-type(6),tr th:nth-of-type(7) {text-align: left;}
+tr th:nth-of-type(7),tr td:nth-of-type(7) {text-align: right;padding-right: 10px;}
+tr td:nth-of-type(1),tr td:nth-of-type(4),tr td:nth-of-type(5) {text-align: center;}
+</style>
+<p class="track">用户中心 &gt; <span>${'关键字：' + kw if kw else '全部用户'}</span></p>
+<div id="appcent">
+	<div class="left_menu">
+		<a href="/admin/user/review_list" class="menu first_menu">待审核用户<span>#{user_review_num}</span></a>
+		<a href="/admin/user/info_list" class="menu last_menu  curr_menu">开发者<span>#{developer_num}</span></a>
+		<a href="/admin/user/not_active_list" class="menu last_menu">待激活用户<span>#{not_active_num}</span></a>
+        <a href="/admin/user/not_idcard_info_list" class="menu last_menu">未上传手持身份证<span>#{not_handheld_id_card_num}</span></a>
+	</div>
+	<div class="right_content">
+        <div id="search">
+            <form action="" method="get">
+			    <input type="text" name="kw" value="" /><input type="submit" value=""/>
+            </form>
+		</div>
+		<table class="table_list">
+			<thead>
+				<tr>
+					<th>开发者名称</th>
+					<th>开发者帐号</th>
+					<th>用户组</th>
+					<th>通过审核时间</th>
+          <th>重设密码</th>
+					<th>授权文件</th>
+				</tr>
+			</thead>
+			<tbody>
+            <?py for each in users['users']: ?>
+            <?py     key_start = each['email'] ?>
+            <?py     score_start = each['pass_time'] ?>
+				<tr>
+					<td><a href="/admin/user/info_detail?email=#{each['email']}&from_url=user_info_list">#{each['show_name']}</a></td>
+					<td>#{each['email']}</td>
+					<td>#{dev_setting.USER_FLAG_DICT[each['flag']]}</td>
+					<td>#{tm2str2(each.get('pass_time', 0))}</td>
+                    <td><a href="#" onclick="javascript:return disp_confirm('#{each['email']}')">重设密码</a></td>
+					<td style="text-align:right;"><a href="/user/pdf?email=#{each['email']}" target="_blank">下载</a></td>
+				</tr>
+            <?py #endfor ?>
+			</tbody>
+		</table>
+
+
+        <div class="page">
+
+<?py total_page = users['total_page'] ?>
+<?py if total_page > 1: ?>
+<?py
+page_list = []
+show_page_num = 10
+if total_page > show_page_num:
+    from_page = current_page - show_page_num/2
+    if from_page<1:
+        from_page = 1
+    #endif
+    to_page = from_page + show_page_num
+    if to_page > total_page:
+        from_page = total_page - show_page_num
+        to_page = total_page
+    #endif
+else:
+    from_page = 1
+    to_page = total_page
+#endif
+
+if total_page > 1:
+    if from_page > 1:
+        page_list.append('<span>...</span>')
+    #endif
+    for i in range(from_page, to_page+1):
+        if i == current_page:
+            page_list.append('<a href="#" class="curr_page">%d</a>' % i)
+        elif i == current_page+1:
+            page_list.append('<a href="?page=%d&key_start=%s&score_start=%d" class="page_num">%d</a>' % (i, key_start, score_start, i))
+        else:
+            page_list.append('<a href="?page=%d&score_start=%d" class="page_num">%d</a>' % (i, score_start, i))
+        #endif
+    #endfor
+    if to_page < total_page:
+        page_list.append('<span>...</span>')
+    #endif
+#endif
+page_str = '\n'.join(page_list)
+?>
+
+
+
+
+		<?py if current_page > 1: ?>
+		<a href="?page=1" class="page_first"></a>
+		<a href="?page=#{current_page-1}" class="page_prev"></a>
+        <?py #endif ?>
+        #{page_str}
+        <?py if current_page < total_page: ?>
+		<a href="?page=#{current_page+1}&key_start=#{key_start}&score_start=#{score_start}" class="page_next"></a>
+		<a href="?page=#{total_page}" class="page_last"></a>
+        <?py #endif ?>
+
+<?py #endif ?>
+
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+function disp_confirm(email) {
+    var r=confirm("您确定要给 "+email+" 重设密码吗?")
+    if(r==true){
+        // document.write("You pressed OK!")
+        $.ajax({
+            url: '/admin/user/info_list',
+            data: {'act': 'reset_pw', 'email': email, '_xsrf': '#{xsrf_token}'},
+            success: function(json) {
+                alert("用户的新密码：" + json.new_pw);
+            },
+            dataType: 'json',
+            type: 'GET'
+        });
+    }else{
+        // document.write("You pressed Cancel!")
+    }
+    return false;
+}
+</script>
+       
+</div>

@@ -1,0 +1,551 @@
+<nav>
+	<a href="/admin/overview">总览</a>
+	<a href="/admin/appcenter" class="current">应用中心</a>
+	<a href="/admin/usercenter">用户中心</a>
+	<a href="/admin/msg">消息</a>
+	<a href="/admin/protocols">协议</a>
+</nav>
+<div id="admin">
+
+
+<script>
+$(function(){
+	$('#apk_upload').uploadify({
+		'swf'		: '/static/js/uploadify.swf',
+		'uploader'	: '#{uploader_apk}',
+		'buttonText': '上传APK',
+		'fileTypeExts':'*.apk',
+		'fileSizeLimit': 99999999999,
+		'showUploadedPercent':true,
+        'showUploadedSize':true,
+        'removeTimeout':1,
+		'method': 'POST',
+		'fileObjName': 'upload_file',
+		'multi'		: false,
+		'onUploadSuccess' : function(file, data, response) {
+		    rspobj = jQuery.parseJSON(data);
+            if(rspobj.status==200){
+                var old_package = $("#id_old_package").val();
+                if(rspobj.apk_package != old_package){
+                    alert("上传的包名不相同: " + rspobj.apk_package + " / " + old_package);
+                    return false;
+                }
+                $("#id_apk_name input").val(rspobj.apk_name);
+                $("#id_apk_versioncode input").val(rspobj.apk_versioncode);
+                $("#id_apk_versionname input").val(rspobj.apk_versionname);
+                $("#id_apk_package input").val(rspobj.apk_package);
+                $('#apk_upload_success').remove();
+                $('<span id="apk_upload_success"> <a target="_blank" href="/'+rspobj.apk_icon+'"><img src="/'+rspobj.apk_icon+'"/></a> ' + file.name + ' </span>').insertAfter('#apk_upload-queue');
+                if(rspobj.msg){
+                    alert(rspobj.msg);
+                }
+            }else{
+                alert(rspobj.msg);
+            }
+        },
+        'onUploadError' : function(file, errorCode, errorMsg, errorString) {
+            alert('文件 ' + file.name + ' 上传失败: ' + errorString);
+        }
+	});
+	
+	$('#cover_upload').uploadify({
+		'swf'		: '/static/js/uploadify.swf',
+		'uploader'	: '/upload/cover',
+		'post_params': {'time': '#{time_str}', 'secure_email': '#{secure_email}'},
+		'buttonText': '',
+		'fileTypeExts':'*.png;*.jpg;*.jpeg;*.gif',
+		'fileObjName': 'upload_file',
+        'removeTimeout':1,
+		'width'		: 360,
+		'height'	: 186,
+		'multi'		: false,
+		'onInit'	: function(){
+			$('#cover_upload object').attr('title','点击更换图片');
+		},
+		'onUploadSuccess' : function(file, data, response) {
+		    rspobj = jQuery.parseJSON(data);
+            if(rspobj.status==200){
+                $("#cover_upload-button").css("background-image","url('"+rspobj.logo_url+"')");
+                $("#cover_upload-button").css({'background-image': 'url('+rspobj.logo_url+')'});
+            }else{
+                alert(rspobj.msg);
+            }
+        },
+        'onUploadError' : function(file, errorCode, errorMsg, errorString) {
+            alert('文件 ' + file.name + ' 上传失败: ' + errorString);
+        }
+	});
+
+	$('#mp4_upload').uploadify({
+		'swf'		: '/static/js/uploadify.swf',
+		'uploader'	: '#{uploader_video}',
+		'buttonText': '',
+		'fileTypeExts':'*.mp4',
+		'fileSizeLimit': 99999999999,
+		'showUploadedPercent':true,
+        'showUploadedSize':true,
+		'width'		: 360,
+		'height'	: 186,
+		'multi'		: false,
+		'onInit'	: function(){
+			$('#mp4_upload object').attr('title','点击更换视频')
+						.css('left','0px');
+		},
+		'onUploadSuccess' : function(file, data, response) {
+		    rspobj = jQuery.parseJSON(data);
+            if(rspobj.status==200){
+                $("#mp4_upload-button").css('background-image','url('+rspobj.video_img+')');
+            }else{
+                alert(rspobj.msg);
+            }
+        },
+        'onUploadError' : function(file, errorCode, errorMsg, errorString) {
+            alert('文件 ' + file.name + ' 上传失败: ' + errorString);
+        }
+	});
+	$('#imgs_upload').uploadify({
+		'swf'		: '/static/js/uploadify.swf',
+		'uploader'	: '/upload/capture',
+		'fileObjName': 'upload_file',
+		'post_params': {'time': '#{time_str}', 'secure_email': '#{secure_email}'},
+		'buttonText': '上传多幅截图',
+		'fileTypeExts':'*.png;*.jpg;*.jpeg;*.gif',
+		'fileSizeLimit': 99999999999,
+		'onInit' : function (instance) {
+			if ($('#one_1').css('background-image') != 'url("http://#{{dev_setting.SUB_DOMAIN}}/static/dev/image/default2.png")') $('#imgs_upload-button .uploadify-button-text').html('重新上传截图');
+		},
+		'onSelect' : function (file) {
+			$('#imgs_upload-button .uploadify-button-text').html('重新上传截图');
+			$('.runing').css('display','block');
+		},
+		'onUploadSuccess' : function(file, data, response) {
+		    rspobj = jQuery.parseJSON(data);
+            if(rspobj.status==200){
+                $.each(rspobj.img_list, function(i,n){
+                	$('#one_'+(i+1)).css('background-image','url('+ n +')');
+	                $('#id_img_'+(i+1)+' .del_one').css('display','block');
+	                $('#id_img_'+(i+2)).css('display','block');
+                });
+            }else{
+                alert(rspobj.msg);
+            }
+        },
+        'onUploadError' : function(file, errorCode, errorMsg, errorString) {
+            alert('文件 ' + file.name + ' 上传失败: ' + errorString);
+        },
+        'onQueueComplete' : function(queueData) {
+        	$('.runing').css('display','none');
+        }
+	});
+	$('.one_upload').uploadify({
+		'swf'		: '/static/js/uploadify.swf',
+		'uploader'	: '/upload/capture',
+		'formData': {'time': '#{time_str}', 'secure_email': '#{secure_email}'},
+		'buttonText': '',
+		'fileTypeExts':'*.png;*.jpg;*.jpeg;*.gif',
+		'fileObjName': 'upload_file',
+        'removeTimeout':1,
+		'width'		: 160,
+		'height'	: 90,
+		'multi'		: false,
+		'onInit'	: function(){
+			$('.box ul object').attr('title','点击更换图片');
+		},
+		'onUploadStart' : function(file) {
+			var i = this.wrapper.parent().index()+1;
+			$('#one_'+i).uploadify('settings','formData',{'cap_index':i});
+		},
+		'onUploadSuccess' : function(file, data, response) {
+		    rspobj = jQuery.parseJSON(data);
+            if(rspobj.status==200){
+                $.each(rspobj.img_list, function(i,n){
+                	$('#one_'+(i+1)).css('background-image','url('+ n +')');
+	                $('#id_img_'+(i+1)+' .del_one').css('display','block');
+	                $('#id_img_'+(i+2)).css('display','block');
+                });
+            }else{
+                alert(rspobj.msg);
+            }
+        },
+        'onUploadError' : function(file, errorCode, errorMsg, errorString) {
+            alert('文件 ' + file.name + ' 上传失败: ' + errorString);
+        }
+	});
+	$('.del_one').click(function(event) {
+		var i = $(this).parent().index()+1;
+		$.get('/user/add_app?act=delcap&time_str=#{time_str}&cap_index='+i, function(data){
+			rspobj = jQuery.parseJSON(data);
+            if(rspobj.status==200){
+            	$('.box>ul .del_one').css('display','none');
+            	$('.box>ul .uploadify').css('background-image','url("http://#{{dev_setting.SUB_DOMAIN}}/static/dev/image/default2.png")');
+            	$('.box>ul li:gt(0)').css('display','none');
+                $.each(rspobj.img_list, function(i,n){
+                	$('#one_'+(i+1)).css('background-image','url('+ n +')');
+	                $('#id_img_'+(i+1)+' .del_one').css('display','block');
+	                $('#id_img_'+(i+2)).css('display','block');
+                });
+            }else{
+                alert(rspobj.msg);
+            }
+		});
+	});
+	var radios = $('input[type=radio]');
+	radios.css('display','none');
+	radios.each(function(){
+		var name = $(this).attr('name');
+		var value = $(this).attr('value');
+		var checked = $(this).attr('checked') ? ' class="selected"' : '';
+		$(this).after('<a name="'+name+'"'+checked+'>'+value+'</a>');
+	});
+	radios.siblings('a').on('click', function(){
+		$(this).siblings('a').removeClass('selected');
+		$(this).siblings('a').prev().removeAttr('checked');
+		$(this).addClass('selected');
+		$(this).prev().attr('checked','checked');
+	});
+
+	var checkboxs = $('input[type=checkbox][name=work]');
+	checkboxs.css('display','none');
+	checkboxs.each(function(){
+		var name = $(this).attr('name');
+		var value = $(this).attr('value');
+		var checked = $(this).attr('checked') ? ' class="selected"' : '';
+		$(this).after('<a name="'+name+'"'+checked+'>'+value+'</a>');
+	});
+	checkboxs.siblings('a').on('click', function(){
+		$(this).toggleClass('selected');
+		if ($(this).hasClass('selected')) $(this).prev().attr('checked','checked');
+		else $(this).prev().removeAttr('checked');
+	});
+
+	$('.limit_text textarea').focus(function(){
+		$('.limit_text').addClass('hover');
+	});
+	$('.limit_text textarea').blur(function(){
+		$('.limit_text').removeClass('hover');
+	});
+	$('.limit_text textarea').on('propertychange input', function(){
+		var str = $(this).val();
+		while (str.len()>600) {
+			str = str.substring(0,str.length-1);
+		}
+		var num = Math.ceil(str.len()/2);
+		$(this).siblings('p').children('span').html(num);
+		$(this).val(str);
+	});
+
+	$('input[name=is_up]').on('click', function(){
+		if ($(this).prop('checked') == true) $('.mp4_mng').css('display','block');
+		else $('.mp4_mng').css('display','none');
+	});
+	$('.upload_mp4 .head').click(function() {
+		$('.mp4_mng').toggle();
+		if ($('input[name=is_up]').prop('checked') == true) $('input[name=is_up]').prop('checked',false);
+		else $('input[name=is_up]').prop('checked',true);
+	});
+
+	$('form').submit(function(){
+		var flag = true;
+		var url = '';
+		$('#slug_label').css('color','#565b61');
+		$('#owner_label').css('color','#565b61');
+		$('#imgs').css('color','#565b61');
+		$('#cover').css('color','#565b61');
+		$('#intro').css('color','#565b61');
+		$('#apk_mng').css('color','#565b61');
+		$('#ajax_err').css('display','none');
+		if ($('#slug').val().length == 0) {
+			flag = false;
+			url = '#slug_label';
+			$('#slug_label').css('color','red');
+		} else {
+			 var json = $.ajax({
+			 	type: "GET",
+				url: window.location.href.replace(/#.*$/, "")+'&act=checkslug&slug='+$('#slug').val(),
+				dataType: 'json',
+				async: false
+			}).responseText;
+			var obj = $.parseJSON(json);
+			if (obj.msg.length > 0) {
+				flag=false;
+				url = '#slug_label';
+				$('#slug_label').css('color','red');
+				$('#ajax_err').html(obj.msg);
+				$('#ajax_err').css('display','inline');
+			}
+		}
+		if ($('#owner').val().length == 0) {
+			flag = false;
+			url = '#owner_label';
+			$('#owner_label').css('color','red');
+		}
+		if ($('#one_1').css('background-image').indexOf('default2.png') != -1) {
+			flag = false;
+			url = '#imgs';
+			$('#imgs').css('color','red');
+		}
+		if ($('#cover_upload-button').css('background-image').indexOf('default.png') != -1) {
+			flag = false;
+			url = '#cover';
+			$('#cover').css('color','red');
+		}
+		if ($('textarea[name=intro]').val().length == 0) {
+			flag = false;
+			url = '#intro';
+			$('#intro').css('color','red');
+		}
+
+		window.location.hash = url;
+		return flag;
+	});
+	//
+
+	$('#id_cancel').click(function(){
+	    $("#id_passornot").val('');
+	    $("#user_title").val('');
+	    $("#msg_content").val('');
+	    $("#id_msg").hide();
+	});
+	$('#id_reset').click(function(){
+	    $("#id_msg").hide();
+	});
+
+	//
+	<?py if app_info['new_logo']: ?>
+	$("#cover_upload-button").css({'background-image': 'url(/#{app_info['new_logo']})'});
+	<?py #endif ?>
+	<?py if app_info.get('video_img'): ?>
+	$('.mp4_mng').css('display','block');
+	$("#mp4_upload-button").css('background-image','url(/#{app_info['video_img']})');
+	<?py #endif ?>
+	<?py new_captures = app_info['new_captures'].split(',') ?>
+	<?py for i in range(len(new_captures)): ?>
+	$('#one_#{i+1}').css('background-image','url(/#{new_captures[i]})');
+	$('#id_img_#{i+1} .del_one').css('display','block');
+	$('#id_img_#{i+2}').css('display','block');
+    <?py #endfor ?>
+});
+</script>
+<style>
+.track {background:url(/static/dev/image/appcenter.png) no-repeat 40px center; }
+.only_menu {background:url(/static/dev/image/addapp.png) no-repeat 15px center;}
+a.curr_menu {background-color: #1876b7;color: #fff;}
+tr th:nth-of-type(2),tr th:nth-of-type(3),tr th:nth-of-type(4),tr th:nth-of-type(6) {text-align: left;}
+tr th:nth-of-type(7),tr td:nth-of-type(7) {text-align: right;padding-right: 10px;}
+tr td:nth-of-type(1),tr td:nth-of-type(4),tr td:nth-of-type(5) {text-align: center;}
+.filter_menu {width:80px;background: url(/static/dev/image/filter.png) no-repeat 62px 20px;}
+.table_list thead th:last-of-type {width:40px;}
+#not_add {background:url(/static/dev/image/not_add.png) no-repeat;height:16px;font-size:16px;display: inline-block;width:90px;text-align: right;}
+input[type=radio],input[type=checkbox] {width:auto;margin: 0px;}
+.select{display: inline-block;border:1px solid #1876b7;border-radius: 15px;height:29px;width:155px;overflow: hidden;}
+.select:after{display: inline-block;width: 25px;height: 29px;line-height: 27px;content: "\25BC";position: absolute;right: 0px;top: 0px;pointer-events:none;font-size: 16px;color:#1876b7;background-color: #fff;}
+.select select{appearance:none;-webkit-appearance:none;-moz-appearance: none;border: none;width: 155px;height:27px;line-height: 20px;outline:none;}
+a[name=language] {display:inline-block;margin-right:8px;width:90px;height:32px;border-radius:16px;background-color:#E1E4E9;color:#8F9399;font-size:14px;line-height:32px;text-align:center;}
+a[name=work] {display:inline-block;margin-right:8px;width:90px;height:32px;border-radius:16px;background-color:#E1E4E9;color:#8F9399;font-size:14px;line-height:32px;text-align:center;}
+a.selected {background-color: #1876b7;color:#fff;}
+.limit_text {display:inline-block;width:520px;height:110px;border:2px solid #D0D0D0;border-radius:5px;}
+.limit_text textarea {appearance:none;-webkit-appearance:none;-moz-appearance: none;border:none;resize:none;padding:10px;width:516px;height:80px;background-color:inherit;}
+	.hover {border-color:#1876b7;}
+.limit_text p {font-size:14px;color:#A6A6A6;text-align:right;padding-top:4px;padding-right:8px;}
+.limit_text .curr_num {display:inline;margin:0px;color:#A2BED9;}
+.app_mng .note {color:#BCBCBC;font-size:12px;padding-top:6px;padding-left:10px;line-height:16px;margin-left:105px;}
+.app_mng .noleft {padding:4px 5px 5px 8px;margin-left:0px;}
+.upload_big_img {display:inline-block;width:360px;height:186px;}
+#cover_upload-button {background: url(/static/dev/image/default.png) no-repeat left top;background-size:cover;border-radius:5px;}
+#cover_upload-queue {position: absolute;top:0px;left:0px;width:100%;height:100%;margin:0px;}
+#cover_upload-queue .uploadify-queue-item {width:100%;height:100%;padding:0px;margin:0px;max-width:100%;border-radius:4px;}
+#cover_upload-queue .uploadify-queue-item .data {display:none;}
+#cover_upload-queue .uploadify-queue-item .cancel {display:none;}
+#cover_upload-queue .uploadify-queue-item .fileName {position: absolute;z-index:100;color:yellow;}
+#cover_upload-queue .uploadify-queue-item .uploadify-progress {margin:0px;}
+#cover_upload-queue .uploadify-queue-item .uploadify-progress .uploadify-progress-bar {height:15px;}
+.uploadify {margin-bottom:0px;}
+.upload_mp4 {border:1px solid #D9D9D9;display:inline-block;width:362px;margin-top:18px;}
+.upload_mp4 .head {display:block;height:31px;line-height:31px;padding-left:10px;background-color:#2C2C2C;color:#FFF;cursor: pointer;}
+.upload_mp4 .head input {display:inline-block; float:left;pointer-events: none;}
+.upload_mp4 .head p {margin-left:20px;font-size:14px;}
+#mp4_upload-button {background: url(/static/dev/image/default.png) no-repeat left top;background-size:cover;border-radius:0px;}
+#mp4_upload-queue {position: absolute;top:0px;left:0px;width:100%;height:186px;margin:0px;}
+#mp4_upload-queue .uploadify-queue-item {width:100%;height:100%;padding:0px;margin:0px;max-width:100%;border-radius:4px;}
+#mp4_upload-queue .uploadify-queue-item .data {display:none;}
+#mp4_upload-queue .uploadify-queue-item .cancel {display:none;}
+#mp4_upload-queue .uploadify-queue-item .fileName {position: absolute;z-index:100;color:yellow;margin:0px auto;}
+#mp4_upload-queue .uploadify-queue-item .uploadify-progress {margin:0px;}
+#mp4_upload-queue .uploadify-queue-item .uploadify-progress .uploadify-progress-bar {height:15px;}
+.mp4_mng {display:none;}
+.box {margin-top:20px;}
+.upload_small_img {display:inline-block;position: static;}
+#imgs_upload-queue {position: absolute;width:540px;left:100px;top:52px;margin:0px;}
+.box .uploadify-queue-item {padding:0px;margin:0px;width:160px;height:90px;z-index:10;}
+.box .uploadify-queue-item .cancel {display:none;}
+.box .uploadify-queue-item .fileName {display:none;}
+.box .uploadify-queue-item .data {display:none;}
+.box .uploadify-queue-item .uploadify-progress {margin:0px;}
+#imgs_upload-queue .uploadify-queue-item {margin-right:20px;margin-bottom:20px;float:left;}
+.app_mng .small_note {font-size:12px;margin-left:0px;padding-top:0px;width:330px;float:right;margin-right:240px;line-height: 30px;}
+.box ul {display:block;width:540px;margin-left:100px;}
+.box ul li {display:none;width:160px;height:90px;margin-right:20px;margin-bottom:20px;float:left;position:relative;}
+.box ul .uploadify-button {background-color:inherit;background-size:cover;}
+.box ul .uploadify:hover .uploadify-button {
+	background-color: inherit;
+}
+.box ul .uploadify-queue {display:block;margin-left:auto;margin-bottom:auto;width:160px;height:90px;position:absolute;top:0;left:0;}
+.box #id_img_1 {display:block;}
+.box .del_one {display:none;position:absolute;top:5px;right:5px;color:red;font-size:20px;z-index:9;cursor:pointer;filter:glow(color=white,strength=3);-webkit-text-fill-color: red;-webkit-text-stroke: 3px white;text-shadow:2px 0 1px #fff, 0 2px 1px #fff, -2px 0 1px #fff, 0 -2px 1px #fff; }
+.inline {display:inline-block;font-size:14px;}
+#apk_title {width:300px;}
+#fname {width:140px;}
+.inline span {margin:5px 5px 5px 200px;height:26px;line-height:26px;}
+.app_mng .end_form {height:200px;border-bottom:0px;margin-bottom:40px;}
+.end_form button {width:120px;}
+.end_form button:nth-of-type(1) {margin-left:100px;}
+.end_form button:nth-of-type(2) {margin-left:30px;}
+.right_content {width:900px;margin-left:40px;}
+.app_mng {background:#FFF;}
+.apk_mng {background-color:#e8e8e8;}
+.apk_mng li {background-color: #f8f8f8;}
+#apk_upload-queue {margin-bottom:0px;width:300px;margin-top:0px;}
+#apk_upload-queue .uploadify-queue-item{padding:0px;margin:0px;width:100%;height:100%;padding-top:20px;}
+#apk_upload-queue .uploadify-queue-item span {display:inline-block;margin: 0px;}
+#apk_upload-queue .uploadify-queue-item .data {display:none;}
+#apk_upload-queue .uploadify-queue-item .cancel {display:none;}
+
+
+.apk_mng input {border:0px solid;border-radius: 0px; width: 150px; padding: 0px 5px;background-color: inherit;}
+#apk_upload_success {margin-left:10px;display: inline-block;}
+#apk_upload_success img {width:30px;height:30px;vertical-align: middle;}
+#apk_upload_success a {display: inline-block;}
+#one_1,#one_2,#one_3,#one_4,#one_5,#one_6 {background:url("/static/dev/image/default2.png") no-repeat scroll left top / cover  rgba(0, 0, 0, 0);border-radius:5px;}
+.runing {width:24px;height:24px;background:url("/static/dev/image/1.gif");left: 230px;position: absolute;top: 3px;display:none;}
+#imgs_upload-queue {display: none;}
+.box>ul .uploadify-button {display:none;}
+#ajax_err {display: inline; margin: 0px 0px 0px 20px; color: red;display: none;}
+
+</style>
+
+<p class="track">应用中心 &gt; <span><a href="/admin/app/review_list">待审核应用</a></span> (#{app_review_num}) &gt; 审核/修改应用：#{app_info['name']}</p>
+
+<div class="right_content">
+	<div class="right-top">
+		<a id="not_add" href="/admin/app/review_list">取消编辑</a>
+	</div>
+    <?py if app_info['email']: ?>
+    <p>开发者： <a href="/admin/user/info_detail?email=#{app_info['email']}" target="_blank">#{app_info['email']} / #{app_info['owner']}</a> </p>
+    <p>开发者名称：#{app_info['owner']} （管理员可自定义）, <a href="/admin/user/app_list?email=#{app_info['email']}" target="_blank">查看该开发者账户提交的应用</a></p>
+    <?py else: ?>
+    <p>开发者名称：#{app_info['owner']} （管理员可自定义）</p>
+    <?py #endif ?>
+	<form class="app_mng" action="" method="post" autocomplete="off">
+        <input type="hidden" name="modified" value="#{app_info['modified']}"/>
+        <input type="hidden" name="time_str" value="#{time_str}"/>
+        <input type="hidden" name="old_package" id="id_old_package" value="#{app_info['package']}"/>
+		<fieldset>
+			<label class="bottom" id="apk_mng">APK</label>
+			<ul class="apk_mng">
+				<li><input id="apk_upload" name="apk_upload" type="file"><span id="apk_upload_success"> <a href="/#{app_info['icon']}" target="_blank"><img src="/#{app_info['icon']}" /></a> #{size2str(app_info['appsize'])} <a href="/#{app_info['apk_path'].replace(setting.UPLOAD_DIR + '/', '')}">下载apk</a> </span></li>
+				<li><span class="app_key">应用名称</span><span id="id_apk_name" class="app_val"><input type="text" name="apk_name" value="#{app_info['name']}"/></span></li>
+				<li><span class="app_key">版本号</span><span id="id_apk_versioncode" class="app_val"><input type="text" name="apk_versioncode" value="#{app_info['versioncode']}" readonly="readonly"/></span></li>
+				<li><span class="app_key">包名</span><span id="id_apk_package" class="app_val"><input type="text" name="apk_package" value="#{app_info['package']}" readonly="readonly"/></span></li>
+				<li><span class="app_key">版本名</span><span id="id_apk_versionname" class="app_val"><input type="text" name="apk_versionname" value="#{app_info['versionname']}"/></span></li>
+			</ul>
+            <!--<p>apk icon: <a href="/#{app_info['icon']}" target="_blank"><img src="/#{app_info['icon']}" width="120" height="120" /></a></p>
+            <p>大小： #{size2str(app_info['appsize'])}</p>
+            <p>apk md5： #{app_info['apk_md5']} <a href="/#{app_info['apk_path'].replace(setting.UPLOAD_DIR + '/', '')}">下载apk</a> </p>-->
+		</fieldset>
+		<fieldset>
+			<div>
+				<label>应用分类</label>
+				<div class="select">
+					<select name="category">
+                        <?py for k in channel_setting.DEFAULT_CATEGORY: ?>
+                        <?py     cat = channel_setting.DEFAULT_CATEGORY[k] ?>
+						<option value="#{k}" #{'selected="selected"' if k == app_info['category'] else ''}>#{cat['text']}</option>
+                        <?py #endfor ?>
+					</select>
+				</div>
+			</div>
+			<div>
+				<label>语言环境</label>
+				<input type="radio" name="language" value="中文" #{'checked="checked"' if app_info['language']=='1' else ''}/>
+				<input type="radio" name="language" value="非中文" #{'checked="checked"' if app_info['language']=='2' else ''}/>
+			</div>
+			<div>
+				<label>操控方式</label>
+                <?py work_dict = dict.fromkeys(app_info['works'].split(','), True) ?>
+                <?py for k in channel_setting.OPERATIONS: ?>
+				<input type="checkbox" name="work" value="#{channel_setting.OPERATIONS[k]}" #{' checked="checked"' if k in work_dict else ''}/>
+                <?py #endfor ?>
+			</div>
+			<div>
+				<label class="top" id="intro">应用介绍</label>
+				<div class="limit_text">
+					<textarea name="intro">${app_info['intro']}</textarea>
+					<p><span class="curr_num">#{len(app_info['intro'])}</span>/300</p>
+				</div>
+				<p class="note">您也可以将版本更新内容写在里面，最好与应用介绍隔一个空行哦...</p>
+			</div>
+		</fieldset>
+		<fieldset>
+			<div>
+				<label id="cover">应用封面</label>
+				<div class="upload_big_img">
+					<input id="cover_upload" name="cover_upload" type="file"/>
+				</div>
+				<p class="note">请上传尺寸为 360*186（像素）的jpg/png文件，<br/>作为应用在TV端的图标 <a href="#">示例</a></p>
+			</div>
+			<div>
+				<label></label>
+				<div class="upload_mp4">
+					<div class="head"><input type="checkbox" name="is_up" #{' checked="checked"' if app_info.get('video_img') else ''}/><p>是否需要上传视频</p></div>
+					<div class="mp4_mng">
+						<input id="mp4_upload" name="mp4_upload" type="file" />
+						<p class="note noleft">只能上传30秒~3分钟的mp4格式视频，用于在应用详情中播放以便更好的展示您的应用</p>
+					</div>
+				</div>
+			</div>
+			<div class="box">
+				<label id="imgs">应用截图</label>
+				<div class="upload_small_img">
+					<input id="imgs_upload" name="imgs_upload" type="file"/>
+				</div>
+				<div class="runing"></div>
+				<p class="note small_note">请上传4-6张1600*900的png/jpg格式的图片</p>
+				<ul>
+                    <?py for i in range(6): ?>
+					<li id="id_img_#{i+1}">
+                        <input id="one_#{i+1}" class="one_upload" name="one_upload" type="file" />
+                        <div class="del_one">&#10005</div>
+                    </li>
+                    <?py #endfor ?>
+				</ul>
+			</div>
+		</fieldset>
+        <fieldset>
+            <div>
+                <label id="owner_label">开发者名称</label>
+                <p class="inline"><input type="text" name="owner" id="owner" value="#{app_info['owner']}"/> </p>
+            </div>
+            <div>
+                <label id="slug_label">域名</label>
+                <p class="inline">#{{web7po_setting.SUB_DOMAIN}}/app/ <input type="text" name="slug" id="slug" value="#{app_info.get('slug', '')}"/> 4~24个英文或数字<span id="ajax_err"></span></p>
+            </div>
+            <div>
+                <label>评分</label>
+                <p class="inline">
+                    <input type="text" id="id_score" class="rating" name="score" data-size="xs" max="10" value="#{app_info.get('score', 6)}"/>
+                    <!--<em class="star">
+                        <i style="width:#{app_info.get('score', 6)}0%"></i>
+                    </em>
+                    <span>#{app_info.get('score', 6)}分</span>-->
+                </p>
+            </div>
+        </fieldset>
+        <fieldset>
+            <button type="submit" name="btn_save_info" value="1">保存（仅修改）</button>
+            <button id="id_reset" type="reset">重设</button>
+        </fieldset>
+	</form>
+</div>
+
+
+</div>

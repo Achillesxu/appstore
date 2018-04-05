@@ -1,0 +1,22 @@
+<html>
+    <style>
+    @font-face {
+        font-family: wqy;
+        src: url('/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc');
+    }
+    body{
+        font-family: wqy;
+    }
+    </style>
+    <body>
+        <div id="content">
+            #{nl2br(protocol_content)}
+            <p>姓名： #{linkman}</p>
+            <p>联系电话： #{tel}</p>
+            <p>Email: #{email}</p>
+            <p>打钩后的确认证明，时间: #{auth_date}</p>
+            <p>身份证扫描件或营业执照扫描件：</p>
+            <img src="#{id_img}">
+        </div>
+    </body>
+</html>

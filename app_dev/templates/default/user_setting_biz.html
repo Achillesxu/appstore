@@ -1,0 +1,292 @@
+<nav>
+	<a href="/user/my_apps">我的应用</a>
+	<a href="/user/msg">消息#{'<var>(%d)</var>' % current_user['new_msg'] if current_user.get('new_msg', 0) else ''}</a>
+	<a href="/user/setting" class="current">设置</a>
+    <?py include('nav_ad.html') ?>
+</nav>
+
+<script>
+$(function(){
+	$('#cp_up').uploadify({
+		'swf'		: '/static/js/uploadify.swf',
+		'uploader'	: '/user/setting',
+		'post_params': {'act': 'upload', 'secure_email': '#{cookie_email}'},
+		'buttonText': '上传图片',
+		'fileTypeExts':'*.png;*.jpg;*.jpeg;*.gif',
+		'multi'		: false,
+		'fileSizeLimit': 4000,
+		'method': 'POST',
+		'fileObjName': 'upload_file',
+		'onUploadStart' : function(file) {
+			$('em[for=b_id_card_img]').css('display','none');
+		},
+		'onUploadSuccess' : function(file, data, response) {
+		    rspobj = jQuery.parseJSON(data);
+            if(rspobj.status==200){
+                $("#b_id_card_img").val(rspobj.img_url);
+                $("#old_file_name").text(rspobj.old_file_name);
+            }else{
+                alert(rspobj.msg);
+            }
+        },
+        'onUploadError' : function(file, errorCode, errorMsg, errorString) {
+            alert('文件 ' + file.name + ' 上传失败: ' + errorString);
+        }
+	});
+	$('#cp_up2').uploadify({
+		'swf'		: '/static/js/uploadify.swf',
+		'uploader'	: '/user/setting',
+		'post_params': {'act': 'upload', 'secure_email': '#{cookie_email}', 'file_type':'handheld'},
+		'buttonText': '上传图片',
+		'fileTypeExts':'*.png;*.jpg;*.jpeg;*.gif',
+		'multi'		: false,
+		'fileSizeLimit': 4000,
+		'method': 'POST',
+		'fileObjName': 'upload_file',
+		'onUploadStart' : function(file) {
+			$('em[for=b_handheld_id_card_img]').css('display','none');
+		},
+		'onUploadSuccess' : function(file, data, response) {
+		    rspobj = jQuery.parseJSON(data);
+            if(rspobj.status==200){
+                $("#b_handheld_id_card_img").val(rspobj.img_url);
+                $("#old_handheld_file_name").text(rspobj.old_handheld_file_name);
+            }else{
+                alert(rspobj.msg);
+            }
+        },
+        'onUploadError' : function(file, errorCode, errorMsg, errorString) {
+            alert('文件 ' + file.name + ' 上传失败: ' + errorString);
+        }
+	});
+	$('.limit_text textarea').on('propertychange input', function(){
+		var str = $(this).val();
+		while (str.len()>200) {
+			str = str.substring(0,str.length-1);
+		}
+		var num = Math.ceil(str.len()/2);
+		$(this).siblings('p').children('span').html(num);
+		$(this).val(str);
+	});
+	$('#appcent form').validate({
+		errorElement:'em',
+		errorClass:'icon_err',
+		onkeyup:false,
+		rules: {
+			b_contact_email: {
+				required: true,
+				email: true,
+			},
+			b_show_name: {
+				required: true,
+			},
+			b_name: {
+				required: true,
+				maxlength: 24,
+			},
+			b_id_num: {
+				required: true,
+			},
+			b_address: {
+				required: true,
+			},
+			b_contact_name: {
+				required: true,
+			},
+			b_contact_tel: {
+				required: true,
+			},
+			b_id_card_img: {
+				required: true,
+			},
+			b_handheld_id_card_img: {
+				required: true,
+			},
+			b_contact_qq: {
+				required: true,
+			},
+		},
+		messages: {
+			b_contact_email: {
+				required: '邮箱地址不能为空',
+				email: '请输入正确的邮箱地址（例如 7po@7po.com）'
+			},
+			b_show_name: {
+				required: '企业名称不能为空',
+			},
+			b_name: {
+				required: '公司注册名称不能为空',
+				maxlength: '公司注册名称不能超过24个字符',
+			},
+			b_id_num: {
+				required: '营业执照注册号不能为空',
+			},
+			b_address: {
+				required: '联系地址不能为空',
+			},
+			b_contact_name: {
+				required: '联系人姓名不能为空',
+			},
+			b_contact_tel: {
+				required: '联系电话不能为空',
+			},
+			b_id_card_img: {
+				required: '营业执照扫描件没有上传',
+			},
+			b_handheld_id_card_img: {
+				required: '手持身份证照片没有上传',
+			},
+			b_contact_qq: {
+				required: 'QQ 号码不能为空',
+			},
+		}
+	});
+	$('#b_link').hover(function(){$('#b_img').css('display','block');},function(){$('#b_img').css('display','none');});
+	$('#b_handheld_link').hover(function(){$('#b_handheld_img').css('display','block');},function(){$('#b_handheld_img').css('display','none');});
+});
+</script>
+<style>
+.track {background:url(/static/dev/image/appcenter.png) no-repeat 40px center; }
+
+.dev_type {margin:0 auto;width:370px;height:36px;}
+.dev_type a {position:absolute;display:inline-block;width:200px;height:36px;line-height:36px;font-size:14px;font-weight:bold;text-align:center;border-radius:28px;border:1px solid #1876B7;}
+.dev_type a:nth-of-type(1) {color:#1876B7;}
+.dev_type a:nth-of-type(2) {background-color:#1876B7;color:#FFF;right:0px;}
+#base_info {height:160px;}
+#desc_info {height:500px;}
+#base_info>div,#desc_info>div,#conn_info>div {margin-top:20px;}
+.info_t {display:inline-block;height:16px;width:100%;font-size:14px;font-weight:bold;color:#1876B7;line-height:16px;}
+.hr {background:url(/static/dev/image/split.png) repeat-x left center;display:inline-block;width:540px;height:16px;margin:auto;float:right;}
+label {width:215px;}
+.inline {display:inline-block;font-size:14px;}
+.error {background:url(/static/dev/image/err.png) no-repeat center center;}
+.info {background:url(/static/dev/image/suc.png) no-repeat center center;}
+.dev_note {color: #aaa;margin-left: 230px;}
+.uploadify {display:inline-block;}
+.file_name {display:inline-block;margin-left:10px;}
+form>div {margin-top:40px;}
+.end {text-align:center;}
+.end button {margin-left:70px;}
+.middle {margin-left:70px;text-align:center;margin-bottom:10px;}
+#appcent {width:940px;margin:0 auto;margin-bottom:80px;}
+.right_content {width:695px;overflow:hidden;background-color:#f8f8f8;padding:20px 40px;}
+input[type=text] {background-color:#f8f8f8;}
+.limit_text {display:inline-block;width:240px;height:110px;border:2px solid #D0D0D0;border-radius:5px;}
+.limit_text textarea {appearance:none;-webkit-appearance:none;-moz-appearance: none;border:none;resize:none;padding:10px;width:236px;height:80px;background-color:inherit;}
+	.hover {border-color:#1876b7;}
+.limit_text p {font-size:14px;color:#A6A6A6;text-align:right;padding-top:4px;padding-right:8px;}
+.limit_text .curr_num {display:inline;margin:0px;color:#A2BED9;}
+.vtop {vertical-align:top;}
+
+#cp_up-queue {width:200px;height:30px;}
+#cp_up-queue .cancel {display:none;}
+#cp_up-queue .data {display:none;}
+#cp_up-queue .uploadify-queue-item {width:100%;height:100%;padding:0;margin:0;}
+#cp_up-queue span {margin:0;}
+
+#cp_up2-queue {width:200px;height:30px;}
+#cp_up2-queue .cancel {display:none;}
+#cp_up2-queue .data {display:none;}
+#cp_up2-queue .uploadify-queue-item {width:100%;height:100%;padding:0;margin:0;}
+#cp_up2-queue span {margin:0;}
+
+#b_id_card_img {visibility: hidden;width:119px;}
+#old_file_name {position: absolute;left: 340px;top: 18px;}
+#b_img {display:none;position:absolute;z-index:100;bottom:0px;height:432px;width:370px;left:280px;}
+
+#b_handheld_id_card_img {visibility: hidden;width:119px;}
+#old_handheld_file_name {position: absolute;left: 340px;top: 18px;}
+#b_handheld_img {display:none;position:absolute;z-index:100;bottom:0px;height:432px;width:370px;left:280px;}
+
+</style>
+<p class="track">设置 &gt; <span>申请服务开发</span></p>
+<div id="appcent">
+	<div class="left_menu">
+		<a href="/user/setting" class="menu first_menu curr_menu">申请服务开通</a>
+		<a href="/user/edit_password" class="menu last_menu">修改密码</a>
+	</div>
+	<div class="right_content develop">
+		<div class="dev_type">
+			<a href="?t=person" class="button">个人开发者</a>
+			<a href="?t=biz" class="button curr">企业开发者</a>
+		</div>
+		<form method="post" action="/user/setting">
+            <input type="hidden" name="t" value="biz"/>
+			<div id="base_info">
+				<p class="info_t">基本信息<span class="hr"></span></p>
+				<div>
+					<label>帐号</label>
+					<p class="inline">#{current_user['email']}</p>
+				</div>
+				<div>
+					<label>* 企业名称</label>
+					<input type="text" name="b_show_name" value="${user_info['b_show_name']}"/>
+					<em class=""></em>
+					<p class="dev_note">企业名称显示为作者名</p>
+				</div>
+			</div>
+			<div id="desc_info">
+				<p class="info_t">详细资料<span class="hr"></span></p>
+				<div>
+					<label>* 公司注册名称</label>
+					<input type="text" name="b_name" value="${user_info['b_name']}"/>
+					<em class=""></em>
+					<p class="dev_note">最多24个字符</p>
+				</div>
+				<div>
+					<label>* 营业执照注册号</label>
+					<input type="text" name="b_id_num" value="${user_info['b_id_num']}"/>
+				</div>
+				<div>
+					<label>* 营业执照(副本)扫描件</label>
+					<input type="file" name="cp_up" id="cp_up"/>
+                    <input type="text" id="b_id_card_img" name="b_id_card_img" value="#{user_info['b_id_card_img']}"/>
+					<span id="old_file_name" class="file_name"></span>
+					<p class="dev_note">请上传小于4M的.jpg或.png格式的正反面图片<br/>
+                    参考<a id="b_link">示例</a><img id="b_img" src="/static/dev/image/b_id_card.jpg" /><a href="#{user_info['b_id_card_img']}" target="_blank">#{user_info['b_id_card_img'].split('/')[-1]}</a>
+                    </p>
+				</div>
+				<div>
+					<label>* 手持身份证照片</label>
+					<input type="file" name="cp_up2" id="cp_up2"/>
+                    <input type="text" id="b_handheld_id_card_img" name="b_handheld_id_card_img" value="#{user_info['b_handheld_id_card_img']}"/>
+					<span id="old_handheld_file_name" class="file_name"></span>
+					<p class="dev_note">请上传.jpg或.png格式的图片，大小不超过4M<br/>
+                    参考<a id="b_handheld_link">示例</a><img id="b_handheld_img" src="/static/dev/image/handheld_id_card.jpg" /><a href="#{user_info['b_handheld_id_card_img']}" target="_blank">#{user_info['b_handheld_id_card_img'].split('/')[-1]}</a>
+                    </p>
+				</div>
+				<div>
+					<label class="vtop">* 联系地址</label>
+					<div class="limit_text">
+						<textarea name="b_address">${user_info['b_address']}</textarea>
+						<p><span class="curr_num">0</span>/100</p>
+					</div>
+				</div>
+			</div>
+			<div id="conn_info">
+				<p class="info_t">联系人信息<span class="hr"></span></p>
+				<div>
+					<label>* 联系人姓名</label>
+					<input type="text" name="b_contact_name" value="${user_info['b_contact_name']}"/>
+				</div>
+				<div>
+					<label>* 联系电话</label>
+					<input type="text" name="b_contact_tel" value="${user_info['b_contact_tel']}"/>
+				</div>
+				<div>
+					<label>* 电子邮箱</label>
+					<input type="text" name="b_contact_email" value="${user_info['b_contact_email']}"/>
+				</div>
+				<div>
+					<label>* QQ</label>
+					<input type="text" name="b_contact_qq" value="${user_info['b_contact_qq']}"/>
+					<span style="font-size:14px;">建议加入开发者qq群：316718920</span>
+				</div>
+			</div>
+			<div class="end">
+				<p class="dev_note middle">如果您点击申请开通服务<br/>表明您已阅读<a href="/doc/useragreement">《奇珀开发者协议》</a></p>
+				<button type="submit">申请开通企业开发者服务</button>
+			</div>
+		</form>
+	</div>
+</div>

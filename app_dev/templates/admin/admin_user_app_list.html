@@ -1,0 +1,154 @@
+<nav>
+	<a href="/admin/overview">总览</a>
+	<a href="/admin/appcenter">应用中心</a>
+	<a href="/admin/usercenter" class="current">用户中心</a>
+	<a href="/admin/msg">消息</a>
+	<a href="/admin/protocols">协议</a>
+</nav>
+
+<script>
+$(function(){
+	$('.table_list').on('mouseover', 'tbody tr', function(){
+		$(this).siblings('.curr_tr').removeClass('curr_tr');
+		$(this).removeClass('curr_tr');
+		$(this).addClass('curr_tr');
+		$('.table_list .delete').css('display','none');
+		$('.delete', this).css('display','block');
+	});
+	$('.table_list').on('click', 'tbody tr', function(){
+		var id = $('td:first', this).text()
+		loadUrl('user/edit_app', '#user', 'app_name:'+id);
+	});
+	$('.delete').on('click', function(){
+		//return false;
+	});
+	$('.menu').hover(
+		function(){
+			$('ul',this).css('display','block');
+		},
+		function(){
+			$('ul',this).css('display','none');
+		}
+	);
+	$("#id_add_app").click(function(){
+        location.href= '/user/add_app';
+    });
+});
+</script>
+<style>
+.track {background:url(/static/dev/image/appcenter.png) no-repeat 40px center; }
+.only_menu {background: url(/static/dev/image/addapp.png) no-repeat 15px center;}
+tr th:nth-of-type(1),tr th:nth-of-type(2),tr th:nth-of-type(3) {text-align: left;}
+tr th:nth-of-type(3) {width:200px;}
+tr th:nth-of-type(7),tr td:nth-of-type(7) {text-align: right;padding-right: 10px;}
+tr td:nth-of-type(4),tr td:nth-of-type(5) {text-align: center;}
+tr td:nth-of-type(1),tr th:nth-of-type(1) {padding-left:40px;}
+.filter_menu {width:80px;background: url(/static/dev/image/filter.png) no-repeat 62px 20px;}
+.table_list thead th:last-of-type {width:40px;}
+.right_content {margin-left:40px;}
+.table_list {width:900px;}
+.no {color:red;}
+.do {color:#1876b7;}
+.yes {color:#000;}
+button {width:120px;}
+</style>
+<p class="track">开发者 #{email} / #{user_info.get('show_name', '')} 提交的应用 (#{total_num})</p>
+
+<?py
+admin_review_dict = {
+    0: '<var class="no">(应用未通过审核)</var>',
+    1: '<var class="do">(应用审核中)',
+    3: '<var class="yes">(应用已上架)</var>',
+    4: '<var class="no">(应用已下架)</var>',
+}
+?>
+
+<div class="right_content">
+	<!--
+	<div id="search">
+		<button id="id_add_app">上传应用</button>
+	</div>
+	-->
+	<table class="table_list">
+		<thead>
+			<tr>
+				<th>名称</th>
+				<th>版本号</th>
+				<th>修改日期</th>
+				<th>应用分类</th>
+				<th>大小</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+        <?py for each in my_apps: ?>
+        <?py     key_start = each['package'] ?>
+        <?py     score_start = each['modified'] ?>
+			<tr>
+				<td><a href="/admin/app/review_detail?email=#{email}&package=#{each['package']}">#{each['name']}</a> #{admin_review_dict.get(each['admin_review'])}</td>
+				<td>#{'<img src="/static/dev/image/dollar.png" alt="应用内付费"/>' if each.get('pay_within') else ''}V#{each['versionname']}</td>
+				<td>#{tm2str2(each['modified'])}</td>
+				<td>#{channel_setting.DEFAULT_CATEGORY[each['category']]['text']}</td>
+				<td>#{size2str(each['appsize'])}</td>
+				<td>#{'<a href="?act=del&email=%s&package=%s" class="delete"></a>' % (email, each['package']) if each['admin_review']==0 else ''}</td>
+			</tr>
+        <?py #endfor ?>
+		</tbody>
+	</table>
+
+<div class="page">
+<?py if total_page > 1: ?>
+<?py
+page_list = []
+show_page_num = 10
+if total_page > show_page_num:
+    from_page = current_page - show_page_num/2
+    if from_page<1:
+        from_page = 1
+    #endif
+    to_page = from_page + show_page_num
+    if to_page > total_page:
+        from_page = total_page - show_page_num
+        to_page = total_page
+    #endif
+else:
+    from_page = 1
+    to_page = total_page
+#endif
+
+if total_page > 1:
+    if from_page > 1:
+        page_list.append('<span>...</span>')
+    #endif
+    for i in range(from_page, to_page+1):
+        if i == current_page:
+            page_list.append('<a href="#" class="curr_page">%d</a>' % i)
+        elif i == current_page+1:
+            page_list.append('<a href="?email=%s&page=%d&key_start=%s&score_start=%d" class="page_num">%d</a>' % (email, i, key_start, score_start, i))
+        else:
+            page_list.append('<a href="?email=%s&page=%d" class="page_num">%d</a>' % (email, i, i))
+        #endif
+    #endfor
+    if to_page < total_page:
+        page_list.append('<span>...</span>')
+    #endif
+#endif
+page_str = '\n'.join(page_list)
+?>
+
+
+
+        <?py if current_page > 1: ?>
+		<a href="?email=#{email}&page=1" class="page_first"></a>
+		<a href="?email=#{email}&page=#{total_page-1}" class="page_prev"></a>
+        <?py #endif ?>
+        #{page_str}
+        <?py if current_page < total_page: ?>
+		<a href="?email=#{email}&page=#{current_page+1}&key_start=#{key_start}&score_start=#{score_start}" class="page_next"></a>
+		<a href="?email=#{email}&page=#{total_page}" class="page_last"></a>
+        <?py #endif ?>
+
+<?py #endif ?>
+</div>
+
+</div>

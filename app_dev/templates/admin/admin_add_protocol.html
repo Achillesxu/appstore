@@ -1,0 +1,119 @@
+<nav>
+	<a href="/admin/overview">总览</a>
+	<a href="/admin/appcenter">应用中心</a>
+	<a href="/admin/usercenter">用户中心</a>
+	<a href="/admin/msg">消息</a>
+	<a href="/admin/protocols" class="current">协议</a>
+</nav>
+<div id="admin">
+<script>
+$(function(){
+	$('.limit_text textarea').focus(function(){
+		$('.limit_text').addClass('hover');
+	});
+	$('.limit_text textarea').blur(function(){
+		$('.limit_text').removeClass('hover');
+	});
+	$('.limit_text textarea').on('propertychange input', function(){
+		var str = $(this).val();
+		while (str.len()>160) {
+			str = str.substring(0,str.length-1);
+		}
+		var num = Math.ceil(str.len()/2);
+		$(this).siblings('p').children('span').html(num);
+		$(this).val(str);
+	});
+});
+</script>
+
+<style>
+.track {background:url(/static/dev/image/usercenter.png) no-repeat 40px center; }
+.dev_type a {display:inline-block;width:200px;height:36px;line-height:36px;font-size:14px;font-weight:bold;text-align:center;border-radius:28px;border:1px solid #1876B7;}
+.dev_type a:nth-of-type(1) {color:#1876B7;}
+.dev_type a:nth-of-type(2) {background-color:#1876B7;color:#FFF;right:0px;}
+.only_menu {background:url(/static/dev/image/addapp.png) no-repeat 15px center;}
+a.curr_menu {background-color: #1876b7;color: #fff;}
+tr th:nth-of-type(2),tr th:nth-of-type(3),tr th:nth-of-type(4),tr th:nth-of-type(6) {text-align: left;}
+tr th:nth-of-type(7),tr td:nth-of-type(7) {text-align: right;padding-right: 10px;}
+tr td:nth-of-type(1),tr td:nth-of-type(4),tr td:nth-of-type(5) {text-align: center;}
+.filter_menu {width:80px;background: url(/static/dev/image/filter.png) no-repeat 62px 20px;}
+.table_list thead th:last-of-type {width:40px;}
+#not_add {background:url(/static/dev/image/not_add.png) no-repeat;height:16px;font-size:16px;display: inline-block;width:90px;text-align: right;}
+input[type=radio],input[type=checkbox] {width:auto;margin: 0px;}
+.select{display: inline-block;border:1px solid #1876b7;border-radius: 15px;height:29px;width:155px;overflow: hidden;}
+.select:after{display: inline-block;width: 25px;height: 29px;line-height: 27px;content: "\25BC";position: absolute;right: 0px;top: 0px;pointer-events:none;font-size: 16px;color:#1876b7;background-color: #fff;}
+.select select{appearance:none;-webkit-appearance:none;-moz-appearance: none;border: none;width: 155px;height:27px;line-height: 20px;padding-top:3px;outline:none;}
+a[name=language] {display:inline-block;margin-right:8px;width:90px;height:32px;border-radius:16px;background-color:#E1E4E9;color:#8F9399;font-size:14px;line-height:32px;text-align:center;}
+a[name=work] {display:inline-block;margin-right:8px;width:90px;height:32px;border-radius:16px;background-color:#E1E4E9;color:#8F9399;font-size:14px;line-height:32px;text-align:center;}
+a.selected {background-color: #1876b7;color:#fff;}
+.limit_text {display:inline-block;width:510px;height:110px;border:2px solid #D0D0D0;border-radius:5px;}
+.limit_text textarea {appearance:none;-webkit-appearance:none;-moz-appearance: none;border:none;resize:none;padding:10px;width:516px;height:80px;background-color:inherit;}
+	.hover {border-color:#1876b7;}
+.limit_text p {font-size:14px;color:#A6A6A6;text-align:right;padding-top:4px;padding-right:8px;}
+.limit_text .curr_num {display:inline;margin:0px;color:#A2BED9;}
+.app_mng .note {color:#BCBCBC;font-size:12px;padding-top:6px;padding-left:10px;line-height:16px;margin-left:105px;}
+.app_mng .noleft {padding:4px 5px 5px 8px;margin-left:0px;}
+.upload_big_img {display:inline-block;width:360px;height:186px;}
+#cover_upload-button {background: url(/static/dev/image/default.png) no-repeat left top;background-size:cover;border-radius:5px;}
+.uploadify {margin-bottom:0px;}
+.upload_mp4 {border:1px solid #D9D9D9;display:inline-block;width:362px;margin-top:18px;}
+.upload_mp4 .head {display:block;height:31px;line-height:31px;padding-left:10px;background-color:#2C2C2C;color:#FFF;}
+.upload_mp4 .head input {display:inline-block; float:left;}
+.upload_mp4 .head p {margin-left:20px;font-size:14px;}
+#mp4_upload-button {background: url(/static/dev/image/default.png) no-repeat left top;background-size:cover;border-radius:0px;}
+.mp4_mng {display:none;}
+.box {margin-top:20px;}
+.upload_small_img {display:inline-block;}
+.app_mng .small_note {font-size:12px;margin-left:0px;padding-top:0px;width:330px;float:right;margin-right:60px;}
+.box ul {display:block;width:520px;height:200px;margin-left:100px;}
+.box li {display:block;width:160px;height:90px;border-radius:5px;margin-right:20px;margin-bottom:20px;background:url(/static/dev/image/default2.png) no-repeat left top;float:left;}
+.box li:nth-of-type(3),.box li:nth-of-type(6) {margin-right:0px;}
+.inline {display:inline-block;font-size:14px;height:32px;line-height:32px;}
+#apk_title {width:300px;}
+#fname {width:140px;}
+.inline span {margin:5px 5px 5px 200px;height:26px;line-height:26px;}
+.app_mng .end_form {height:200px;border-bottom:0px;margin-bottom:40px;}
+.app_mng fieldset {border: 0px;}
+fieldset button {width:120px;margin-top:30px;}
+fieldset:nth-of-type(1) button:nth-of-type(1) {margin-left:110px;background-color:#FF9D68;border:1px solid #FF9D68;}
+fieldset:nth-of-type(2) button:nth-of-type(1) {margin-left:110px;}
+#user_title {width:510px;border-radius:0px;border:2px solid #D0D0D0;background-color:#F8F8F8;padding-left:10px;}
+fieldset button:nth-of-type(2) {margin-left:30px;}
+fieldset:last-of-type {margin-bottom:40px;}
+.app_mng label {padding-right: 10px;width:110px;}
+</style>
+<p class="track">协议 &gt; <span>新增协议</span></p>
+<div id="appcent">
+	 <div class="left_menu">
+		<!--<a href="/admin/user/review_list" class="menu first_menu">待审核用户</a>-->
+            <a href="/admin/protocols" class="menu last_menu  curr_menu">协议列表</a>
+	</div>
+	<div class="right_content">
+		<div class="right-top">
+			<a id="not_add" href="/admin/protocols">返回</a>
+		</div>
+		<form action="" method="post" class="app_mng">
+			<fieldset>
+				<div>
+					<label>*协议名称</label>
+					<input type="text" name="protocol_name" value="">
+				</div>
+				<div>
+					<label>* 协议内容</label>
+					<textarea class="desform" rows="20" name="protocol_content"></textarea>
+				</div>
+                <div>&nbsp;</div>
+				<div>
+					<label>*  授权日期</label>
+					<input type="text" name="protocol_date" value="" placeholder="2014-09-07 07:12:45"/>
+				</div>
+				<div>
+					<button name="btn_save_info" type="submit">提交</button>
+				</div>
+			</fieldset>
+
+		</form>
+	</div>
+</div>
+
+</div>

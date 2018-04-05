@@ -1,0 +1,51 @@
+.page {margin:0 auto;text-align: center;}
+.page span {display: inline;}
+.page {clear:both;padding-top: 50px;padding-bottom:100px;text-align: center;font-weight:bold;font-size:14px;}
+.page a {display:inline-block;margin-right:10px;vertical-align: middle;}
+.page a.page_first {background-image:url(image/page_first.png);width:36px;height:36px;line-height:36px;}
+.page a.page_prev {background-image:url(image/page_prev.png);width:36px;height:36px;line-height:36px;}
+.page a.page_next {background-image:url(image/page_next.png);width:36px;height:36px;line-height:36px;}
+.page a.page_last {background-image:url(image/page_last.png);width:36px;height:36px;line-height:36px;}
+.page a.page_num {color:#1876b7;}
+.page a.curr_page {color:#000;text-decoration:underline;}
+.page span {margin:0 10px 0 auto;}
+
+#sortable {
+    list-style-type: none;
+    margin: 0; padding: 0; width: 100%;
+}
+#sortable li {
+    /*float: left;*/
+    font-size: 1em;
+    /*height: 90px;*/
+    margin: 3px 10px 20px 0;
+    padding: 1px;
+    text-align: center;
+    width: 100px;
+    display: inline-block;
+}
+
+#sortable li img{cursor:pointer;}
+
+#id_app_list {list-style-type: none;width: 100%;}
+#id_app_list li {
+    float: left;
+    font-size: 1em;
+    height: 160px;
+    margin: 3px 10px 15px 0;
+    padding: 1px;
+    width: 100px;
+}
+
+.row input {padding:5px;line-height:150%;width: 70%;}
+.video_list {list-style: none;}
+.video_list li {
+display: inline-block;
+width: 100px;
+min-height: 157px;
+margin: 0px 15px 15px 0px;}
+.cl {clear:both;}
+
+.search_con li {margin-bottom:20px;line-height:120%;}
+.search_con li img {margin-right:10px;width:100px;height:150px;}
+#source_list input {width: 60%;}

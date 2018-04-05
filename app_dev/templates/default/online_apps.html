@@ -1,0 +1,121 @@
+<nav>
+	<a href="/user/my_apps">我的应用</a>
+	<a href="/user/msg">消息#{'<var>(%d)</var>' % current_user['new_msg'] if current_user.get('new_msg', 0) else ''}</a>
+	<a href="/user/setting">设置</a>
+    <?py include('nav_ad.html') ?>
+</nav>
+<div id="user">
+
+
+<script>
+$(function(){
+	$('.table_list').on('mouseover', 'tbody tr', function(){
+		$(this).siblings('.curr_tr').removeClass('curr_tr');
+		$(this).removeClass('curr_tr');
+		$(this).addClass('curr_tr');
+	});
+	$('.table_list').on('click', 'tbody tr', function(){
+		var id = $('td:first', this).text()
+		//loadUrl('admin/form_review_edit_app.html', '#admin', 'app_id:'+id);
+	});
+});
+</script>
+<style>
+.track {background:url(/static/dev/image/appcenter.png) no-repeat 40px center; }
+.only_menu {background: url(/static/dev/image/addapp.png) no-repeat 15px center;}
+tr th:nth-of-type(2),tr th:nth-of-type(3),tr th:nth-of-type(6),tr th:nth-of-type(7) {text-align: left;}
+tr th:nth-of-type(7),tr td:nth-of-type(7) {text-align: right;padding-right: 10px;}
+tr td:nth-of-type(1),tr td:nth-of-type(4),tr td:nth-of-type(5) {text-align: center;}
+.right_content {margin-left:40px;}
+.table_list {width:900px;}
+</style>
+<p class="track">应用市场</p>
+<div class="right_content">
+	<table class="table_list">
+		<thead>
+			<tr>
+				<th>名称</th>
+				<th>开发者</th>
+				<th>版本号</th>
+				<th>修改日期</th>
+				<th>应用分类</th>
+				<th>大小</th>
+			</tr>
+		</thead>
+		<tbody>
+        <?py for each in online_apps: ?>
+        <?py     key_start = each['key'] ?>
+        <?py     score_start = each['modified'] ?>
+			<tr>
+				<td><a href="http://#{{web7po_setting.SUB_DOMAIN}}/app/#{each['slug']}" target="_blank">#{each['name']}</a></td>
+				<td>#{each['owner']}</td>
+				<td>V#{each['versionname']}</td>
+				<td>#{tm2str2(each['modified'])}</td>
+				<td>#{channel_setting.DEFAULT_CATEGORY[each['category']]['text']}</td>
+				<td>#{size2str(each['appsize'])}</td>
+			</tr>
+        <?py #endfor ?>
+		</tbody>
+	</table>
+	<div class="page">
+
+<?py if total_page > 1: ?>
+<?py
+page_list = []
+show_page_num = 10
+if total_page > show_page_num:
+    from_page = current_page - show_page_num/2
+    if from_page<1:
+        from_page = 1
+    #endif
+    to_page = from_page + show_page_num
+    if to_page > total_page:
+        from_page = total_page - show_page_num
+        to_page = total_page
+    #endif
+else:
+    from_page = 1
+    to_page = total_page
+#endif
+
+if total_page > 1:
+    if from_page > 1:
+        page_list.append('<span>...</span>')
+    #endif
+    for i in range(from_page, to_page+1):
+        if i == current_page:
+            page_list.append('<a href="#" class="curr_page">%d</a>' % i)
+        elif i == current_page+1:
+            page_list.append('<a href="?page=%d&key_start=%s&score_start=%d" class="page_num">%d</a>' % (i, key_start, score_start, i))
+        else:
+            page_list.append('<a href="?page=%d" class="page_num">%d</a>' % (i, i))
+        #endif
+    #endfor
+    if to_page < total_page:
+        page_list.append('<span>...</span>')
+    #endif
+#endif
+page_str = '\n'.join(page_list)
+?>
+
+
+
+        <?py if current_page > 1: ?>
+		<a href="?page=1" class="page_first"></a>
+		<a href="?page=#{total_page-1}" class="page_prev"></a>
+        <?py #endif ?>
+        #{page_str}
+        <?py if current_page < total_page: ?>
+		<a href="?page=#{current_page+1}&key_start=#{key_start}&score_start=#{score_start}" class="page_next"></a>
+		<a href="?page=#{total_page}" class="page_last"></a>
+        <?py #endif ?>
+
+<?py #endif ?>
+
+
+	</div>
+</div>
+
+    
+
+</div>

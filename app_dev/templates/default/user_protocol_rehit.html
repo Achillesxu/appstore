@@ -1,0 +1,29 @@
+<script>
+function agree_select(){
+    var selected = $("#agree").prop("checked");
+    if(selected){
+        $("#sbt").attr('disabled', false);
+        $("#sbt").css({"background-color":"#1876B7" ,"border":"#1876B7", "cursor": "pointer"});
+    }else{
+        $("#sbt").attr('disabled', true);
+        $("#sbt").css({"background-color":"#CCC" ,"border":"#CCC", "cursor": "auto"});
+    }
+}
+</script>
+<div id="register">
+	<article>
+		<h1>重新授权</h1>
+		<p>奇珀开发者协议已更改，请重新勾选协议完成授权操作</p>
+	</article>
+    <?py if msg: ?>
+    <p style="color:red">#{msg}</p>
+    <?py #endif ?>
+	<form method="post" action="/user/protocol_rehit" novalidate="novalidate">
+        <input type="hidden" id="email" name="email" value="#{email}">
+		<p class="msg" id="msg" style="line-height: 18px;margin-bottom:30px;">
+            <input type="checkbox" id="agree" name="agree"  onchange="agree_select()" value="1" style="float: left;margin: 0;padding: 0;width: 30px;"/>
+            我已阅读并完全接受 <br/><a href="/doc/useragreement">《奇珀开发者协议》</a>
+        </p>
+		<button id="sbt" type="submit" style="background-color: #CCC;border: 1px solid #CCC;cursor:auto;" disabled>授权</button>
+	</form>
+</div>

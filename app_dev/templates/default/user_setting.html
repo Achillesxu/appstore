@@ -1,0 +1,108 @@
+<script>
+$(function(){
+	$('#cn_up').uploadify({
+		'swf'		: '/static/js/uploadify.swf',
+		'uploader'	: 'demo.php',
+		'buttonText': '上传APK',
+		'multi'		: false
+	});
+});
+</script>
+<style>
+.track {background:url(/static/dev/image/appcenter.png) no-repeat 40px center; }
+tr th:nth-of-type(2),tr th:nth-of-type(3),tr th:nth-of-type(6),tr th:nth-of-type(7) {text-align: left;}
+tr th:nth-of-type(7),tr td:nth-of-type(7) {text-align: right;padding-right: 10px;}
+tr td:nth-of-type(1),tr td:nth-of-type(4),tr td:nth-of-type(5) {text-align: center;}
+
+.dev_type {margin:0 auto;width:370px;height:36px;}
+.dev_type a {position:absolute;display:inline-block;width:200px;height:36px;line-height:36px;font-size:14px;font-weight:bold;text-align:center;border-radius:28px;border:1px solid #1876B7;}
+.dev_type a:nth-of-type(1) {background-color:#1876B7;color:#FFF;}
+.dev_type a:nth-of-type(2) {color:#1876B7;right:0px;}
+#base_info {height:160px;}
+#desc_info {height:500px;}
+#base_info>div,#desc_info>div {margin-top:20px;}
+.info_t {display:inline-block;height:16px;width:100%;font-size:14px;font-weight:bold;color:#1876B7;line-height:16px;}
+.hr {background:url(/static/dev/image/split.png) repeat-x left center;display:inline-block;width:540px;height:16px;margin:auto;float:right;}
+label {width:215px;}
+.inline {display:inline-block;font-size:14px;}
+.error {background:url(/static/dev/image/err.png) no-repeat center center;}
+.info {background:url(/static/dev/image/suc.png) no-repeat center center;}
+.dev_note {color: #aaa;margin-left: 230px;}
+.uploadify {display:inline-block;}
+.file_name {display:inline-block;margin-left:10px;}
+form>div {margin-top:40px;}
+.end {text-align:center;}
+.end button {margin-left:70px;}
+.middle {margin-left:70px;text-align:center;margin-bottom:10px;}
+#appcent {width:940px;margin:0 auto;margin-bottom:80px;}
+.right_content {width:695px;overflow:hidden;background-color:#f8f8f8;padding:20px 40px;}
+input[type=text] {background-color:#f8f8f8;}
+</style>
+<p class="track">设置 &gt; <span>申请服务开发</span></p>
+<div id="appcent">
+	<div class="left_menu">
+		<a href="set_person.html" name="to_user_set_person" class="menu first_menu curr_menu">申请服务开通</a>
+		<a href="set_pass.html" name="to_user_set_pass" class="menu last_menu">修改密码</a>
+	</div>
+	<div class="right_content develop">
+		<div class="dev_type">
+			<a name="to_user_set_person" class="button curr">个人开发者</a>
+			<a name="to_user_set_corp" class="button">企业开发者</a>
+		</div>
+		<form>
+			<div id="base_info">
+				<p class="info_t">基本信息<span class="hr"></span></p>
+				<div>
+					<label>帐号</label>
+					<p class="inline">lzf@7po.com</p>
+				</div>
+				<div>
+					<label>* 开发者名称</label>
+					<input type="text" name="develop_name"/>
+					<em class="error"></em>
+					<p class="dev_note">开发者名称显示为作者名</p>
+				</div>
+			</div>
+			<div id="desc_info">
+				<p class="info_t">详细资料<span class="hr"></span></p>
+				<div>
+					<label>* 真实姓名</label>
+					<input type="text" name="true_name"/>
+					<em class="info"></em>
+					<p class="dev_note">最多24个字符</p>
+				</div>
+				<div>
+					<label>* 身份证号</label>
+					<input type="text" name="card_no"/>
+				</div>
+				<div>
+					<label>* 身份证扫描件</label>
+					<input type="file" name="cn_up" id="cn_up"/>
+					<span class="file_name">card_no.png</span>
+					<p class="dev_note">请上传小于4M的.jpg或.png格式的正反面图片<br/>参考<a class="tip">图例</a></p>
+				</div>
+				<div>
+					<label>* 联系电话</label>
+					<input type="text" name="telephone"/>
+					<p class="dev_note">固定电话请附带区号，如021-12345678</p>
+				</div>
+				<div>
+					<label>* 电子邮箱</label>
+					<input type="text" name="email"/>
+				</div>
+				<div>
+					<label>QQ</label>
+					<input type="text" name="qq"/>
+				</div>
+				<div>
+					<label>个人网站</label>
+					<input type="text" name="person_web"/>
+				</div>
+			</div>
+			<div class="end">
+				<p class="dev_note middle">如果您点击申请开通服务<br/>表明您已阅读<a>《奇珀开发者协议》</a></p>
+				<button>申请开通个人开发者服务</button>
+			</div>
+		</form>
+	</div>
+</div>
