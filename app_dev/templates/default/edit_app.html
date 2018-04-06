@@ -392,7 +392,7 @@ a.selected {background-color: #1876b7;color:#fff;}
 			<div>
 				<label>分类</label>
                     <?py for cate1 in setting.CATE_LIST: ?>
-						<input type="radio" name="language" value=#{cate1} #{'checked="checked"' if app_info['category'][-1]=='1' else ''}>
+						<input type="radio" name="language" value=#{cate1} #{'checked="checked"' if app_info['category'][:-1]==setting.CATE_DICT[cate1] else ''}>
                     <?py #endfor ?>
 			</div>
 			<div>

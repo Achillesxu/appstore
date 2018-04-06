@@ -20,17 +20,15 @@ from time import time
 from StringIO import StringIO
 from PIL import Image
 
-from tornado import gen
+import tornado.web
 
 from app_dev.handler.base import BaseHandler
-from app_dev.handler.base import authenticated
 from app_dev.handler.base import authenticated
 from app_dev.model.user import UserModel
 from libs.common import mk_dir, get_year_mon_str, tm2str, get_text_fenci, is_email
 from app_dev.lib.common import insert_time_to_code, remove_time_from_encode, set_big_file_upload_url, \
-    apk_parser, fix_old_cat_name, get_styles
+    apk_parser
 import setting
-import app_dev.setting as dev_setting
 
 
 class HomeMainPage(BaseHandler):
@@ -103,11 +101,11 @@ class MyAppsPage(BaseHandler):
         page = self.get_argument('page', '1')
         page = int(page)
         kw = self.get_argument('kw', '')
-        # if kw:
-        #     my_apps_info = UserModel.get_my_apps_info_by_kw(email, kw)
-        # else:
-        #     my_apps_info = UserModel.get_my_apps_info(email, page, key_start, score_start)
-        my_apps_info = {'total_num': 0, 'total_page': 0, 'apps': []}
+        if kw:
+            my_apps_info = UserModel.get_my_apps_info_by_kw(email, kw)
+        else:
+            my_apps_info = UserModel.get_my_apps_info(email, page, key_start, score_start)
+
         self.echo('my_apps.html', {
             'title': '我的应用',
             'kw': kw,
@@ -188,14 +186,14 @@ class AddAppPage(BaseHandler):
             self.write('<br/>'.join(errors))
             return
 
-        UserModel.add_user_app_info(self.current_user, time_key, app_info, self.current_user.get('show_name'))
+        UserModel.add_user_app_info(self.current_user, time_key, app_info)
         self.redirect('/user/my_apps')
 
 
 class EditAppPage(BaseHandler):
     @authenticated
     def get(self):
-        email = self.current_user['email']
+        email = self.current_user
         time_str = ('%.6f' % time()).replace('.', '')
         package = self.get_argument('package', None, strip=False)  # 版本号多出空格
         app_info = UserModel.get_user_app_info_for_edit_get(email, package)
@@ -209,11 +207,8 @@ class EditAppPage(BaseHandler):
         #
         arg_apk_dict = {'act': 'edit', 'time': time_str, 'code': secure_email, 'next': '/upload/apk'}
         uploader_apk = set_big_file_upload_url(arg_apk_dict)
-        #
-        arg_video_dict = {'act': 'edit', 'time': time_str, 'code': secure_email, 'next': '/upload/video'}
-        uploader_video = set_big_file_upload_url(arg_video_dict)
         # 清空用户的过期数据
-        UserModel.clear_old_tmp_appdata(self.current_user['email'])
+        UserModel.clear_old_tmp_appdata(self.current_user)
         # 把原来的截图cp 过来
         app_info_source = UserModel.get_user_app_info_for_edit(email, package)
         UserModel.update_apk_info_tmp(email, time_str, {
@@ -225,12 +220,11 @@ class EditAppPage(BaseHandler):
             'time_str': time_str,
             'secure_email': secure_email,
             'uploader_apk': uploader_apk,
-            'uploader_video': uploader_video
         }, layout='_layout.html')
 
     @authenticated
     def post(self):
-        email = self.current_user['email']
+        email = self.current_user
         time_key = self.get_argument('time_str', None)
         if time_key is None:
             return
@@ -239,15 +233,10 @@ class EditAppPage(BaseHandler):
         if old_app_info is None:
             self.write('app is None')
             return
-        language = self.get_argument('language')
-        tags = self.get_argument('tags')
-        tag_info = fix_old_cat_name(tags)  # {'category': 'video', 'tags':
-        works = get_styles(self.get_arguments('work'))
+        category = self.get_argument('language')
         intro = self.get_argument('intro')
-        used_video = self.get_argument('is_up', 'off')  # on
         modified = int(self.get_argument('modified'))
         update_log = self.get_argument('update_log')
-        pay_within = self.get_argument('pay_within', '')
         # 在打开修改页面和提交修改之间存在一次修改（最后修改时间不一致）
         # 发生的情况：多人编辑或单人多窗口同时修改一个应用
         if modified != old_app_info['modified']:
@@ -255,16 +244,10 @@ class EditAppPage(BaseHandler):
             return
 
         app_info = {
-            'category': tag_info['category'],
-            'language': dev_setting.LANGUAGE_CNN[language],
-            'works': works,
+            'category': setting.CATE_DICT[category] + '1',
             'intro': intro,
-            'used_video': used_video,
-            'email': self.current_user['email'],
-            'owner': self.current_user.get('show_name', ''),
-            'tags': tag_info['tags'],
+            'email': self.current_user,
             'update_log': update_log,
-            'pay_within': pay_within
             # 'modified': int(time())
         }
         other_info = UserModel.get_user_app_info_tmp(email, time_key)
@@ -285,7 +268,7 @@ class EditAppPage(BaseHandler):
             self.write('<br/>'.join(errors))
             return
 
-        UserModel.update_user_app_info(package, email, time_key, app_info, self.current_user.get('show_name'))
+        UserModel.update_user_app_info(package, email, time_key, app_info)
         self.redirect('/user/my_apps')
 
 
@@ -341,6 +324,7 @@ class UploadAPKPage(BaseHandler):
             'goto_url': goto_url
         }
         if status == 200:
+            apk_obj['apk_path'] = apk_obj['apk_path'].replace(setting.UPLOAD_DIR + '/', '')
             up_result = UserModel.update_apk_info_tmp(email, time_key, apk_obj)
             if up_result is None:
                 rsp['status'] = 201
@@ -360,13 +344,12 @@ class UploadIconPage(BaseHandler):
         upload_file = self.request.files.get('upload_file')
         file_md5 = md5(upload_file[0]['body']).hexdigest()
         # 检测图片大小
-        if self.current_user not in ['admin@7po.com', dev_setting.DEV_ADMIN_EMAIL]:
-            im = Image.open(StringIO(upload_file[0]['body']))
-            wh = im.size
-            if min(wh) < 200:
-                rsp['msg'] = '请上传边长至少为200 px 的正方形icon：所上传的是 %d x %d px' % wh
-                self.write(json.dumps(rsp))
-                return
+        im = Image.open(StringIO(upload_file[0]['body']))
+        wh = im.size
+        if min(wh) < 200:
+            rsp['msg'] = '请上传边长至少为200 px 的正方形icon：所上传的是 %d x %d px' % wh
+            self.write(json.dumps(rsp))
+            return
         save_file_name = "%s.png" % file_md5
         file_path = 'static/upload/icon_tmp/%s' % get_year_mon_str()
         ab_path = os.path.join(setting.UPLOAD_DIR, file_path, save_file_name)
@@ -524,6 +507,62 @@ class UploadImgFile(BaseHandler):
             rsp['img_url'] = '/' + file_url
 
         self.write(json.dumps(rsp))
+
+
+class RecommendAppList(tornado.web.RequestHandler):
+    def get(self):
+        self.set_header('Content-Type', 'application/json;charset=UTF-8')
+        res_dict = dict()
+        res_dict['apps'] = UserModel.get_app_package_list(setting.root_name, setting.RECOMMEND_APP_LIST)
+        res_dict['num'] = len(res_dict['apps'])
+        self.write(json.dumps(res_dict))
+
+
+class AppDetail(tornado.web.RequestHandler):
+    def get(self):
+        self.set_header('Content-Type', 'application/json;charset=UTF-8')
+        package_name = self.get_argument('package', '')
+        d_res = UserModel.get_app_detail(setting.root_name, package_name)
+        self.write(json.dumps(d_res))
+
+
+class AppUpdate(tornado.web.RequestHandler):
+    def get(self):
+        """
+        {
+            'package': 'versioncode',
+            'package': 'versioncode',
+            'package': 'versioncode',
+        }
+        :return:
+        """
+        self.set_header('Content-Type', 'application/json;charset=UTF-8')
+        package_json = self.get_argument('package_json', '')
+        ret_dict = dict()
+        try:
+            p_dict = json.loads(package_json)
+            p_list = [i for i in p_dict.iterkeys()]
+            res_list = UserModel.get_app_package_list(setting.root_name, p_list)
+            for j in res_list:
+                if int(p_dict[j['package']]) < int(j['versioncode']):
+                    ret_dict[j['package']] = j
+        except Exception as e:
+            self.write(json.dumps(ret_dict.update({'error_reason': e, 'error_code': -1})))
+        else:
+            self.write(json.dumps(ret_dict))
+
+
+class AppCategoryList(tornado.web.RequestHandler):
+    def get(self):
+        self.set_header('Content-Type', 'application/json;charset=UTF-8')
+        category = self.get_argument('category', '')
+        res_dict = dict()
+        if category not in [i for i in setting.CATE_DICT_REVERSE.iterkeys()]:
+            category = ''
+        p_list = UserModel.get_category_package_list(category)
+        res_dict['apps'] = UserModel.get_app_package_list(setting.root_name, p_list)
+        res_dict['num'] = len(res_dict['apps'])
+        self.write(json.dumps(res_dict))
 
 
 class PageNotFoundHandler(BaseHandler):

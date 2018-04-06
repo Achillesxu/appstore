@@ -1,5 +1,16 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+@license : (C) Copyright 2013-2017, Easy doesnt enter into grown-up life.
+@Software: PyCharm
+@Project : appstore
+@Time : 2018/4/5 下午5:18
+@Author : achilles_xushy
+@contact : yuqingxushiyin@gmail.com
+@Site :
+@File : hzszm.py
+@desc :
+"""
 
 
 def multi_get_letter(str_input): 

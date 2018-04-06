@@ -150,6 +150,8 @@ class UserModel(object):
         name = 'dev_user_apps_package:%s' % email
         #
         db.hset(name, app_info['package'], json.dumps(app_info))
+        db.zset(name, app_info['package'], app_info['modified'])
+        db.hset(app_info['category'][:-1], app_info['package'], '1')
 
         # del tmp data
         db.hdel('dev_user_apps_tmp:%s' % email, time_key)
@@ -168,16 +170,6 @@ class UserModel(object):
                     info_changed += 1
         #
         old_app_info.update(app_info)
-        # 对不勾选使用视频，却已经上传了视频
-        if old_app_info.get('used_video', 'off') == 'off':
-            if 'video_img' in old_app_info and 'video_path' in old_app_info:
-                try:
-                    os.remove(old_app_info['video_path'])
-                    os.remove('%s/%s' % (setting.UPLOAD_DIR, old_app_info['video_img']))
-                except:
-                    pass
-                del old_app_info['video_img']
-                del old_app_info['video_path']
         #
         # # if info_changed > 0:  # 不做信息是否更新检测
         if not_change_update_time:
@@ -192,6 +184,7 @@ class UserModel(object):
             # 更新上架时间
             old_app_info['modified'] = int(time())
         db.hset(name, package, json.dumps(old_app_info))
+        db.zset(name, package, old_app_info['modified'])
 
         #
         # del tmp data
@@ -294,6 +287,7 @@ class UserModel(object):
                 os.remove('%s/%s' % (base_dir, obj['icon']))
                 # apk_path - 全路径
                 os.remove(obj['apk_path'])
+                db.hdel(obj['category'][:-1], package)
             except Exception:
                 pass
         db.hdel(name, package)
@@ -304,12 +298,81 @@ class UserModel(object):
         value = db.hget('dev_user_apps_package:%s' % email, package)
         if value:
             obj = json.loads(value)
-            if isinstance(obj['works'], list):
-                obj['works'] = get_styles(obj['works'])
-                obj['style'] = obj['works']
-                db.hset('dev_user_apps_package:%s' % email, package, json.dumps(obj))
             return obj
         return None
+
+    @staticmethod
+    def get_category_package_list(category, email=setting.root_name):
+        if category:
+            return db.hkeys(category, '', '', db.hsize(category))
+        else:
+            return db.hkeys('dev_user_apps_package:%s' % email, '', '', db.hsize('dev_user_apps_package:%s' % email))
+
+    @staticmethod
+    def get_app_package_list(email, p_list):
+        res_list = list()
+        if p_list:
+            r_dict = db.hmget('dev_user_apps_package:%s' % email, *p_list)
+            for k, v in r_dict.iteritems():
+                d_tmp = dict()
+                if v:
+                    try:
+                        d_app = json.loads(v)
+                    except Exception:
+                        pass
+                    else:
+                        d_tmp['name'] = d_app['name']
+                        d_tmp['package'] = d_app['package']
+                        d_tmp['versioncode'] = d_app['versioncode']
+                        d_tmp['versionname'] = d_app['versionname']
+                        d_tmp['category'] = d_app['category'][:-1]
+                        d_tmp['apk_path'] = 'http://{}/{}'.format(setting.DOMAIN, d_app['apk_path'])
+                        d_tmp['icon'] = 'http://{}/{}'.format(setting.DOMAIN, d_app['icon'])
+                        d_tmp['logo'] = 'http://{}/{}'.format(setting.DOMAIN, d_app['new_logo'])
+                        d_tmp['captures'] = ''.join(['http://{}/{}'.format(setting.DOMAIN, i)
+                                                     for i in d_app['new_captures'].split(',')])
+                        d_tmp['apk_md5'] = d_app['apk_md5']
+                        d_tmp['app_size'] = d_app['appsize']
+                        res_list.append(d_tmp)
+            return res_list
+        else:
+            return res_list
+
+    @staticmethod
+    def get_app_detail(email, package_name):
+        pkg_list = db.hkeys('dev_user_apps_package:%s' % email, '', '', db.hsize('dev_user_apps_package:%s' % email))
+        d_tmp = dict()
+        if package_name in pkg_list:
+            j_app = db.hget('dev_user_apps_package:%s' % email, package_name)
+            if j_app:
+                try:
+                    d_app = json.loads(j_app)
+                    d_tmp['name'] = d_app['name']
+                    d_tmp['package'] = d_app['package']
+                    d_tmp['versioncode'] = d_app['versioncode']
+                    d_tmp['versionname'] = d_app['versionname']
+                    d_tmp['category'] = d_app['category'][:-1]
+                    d_tmp['apk_path'] = 'http://{}/{}'.format(setting.DOMAIN, d_app['apk_path'])
+                    d_tmp['icon'] = 'http://{}/{}'.format(setting.DOMAIN, d_app['icon'])
+                    d_tmp['logo'] = 'http://{}/{}'.format(setting.DOMAIN, d_app['new_logo'])
+                    d_tmp['captures'] = ''.join(['http://{}/{}'.format(setting.DOMAIN, i)
+                                                 for i in d_app['new_captures'].split(',')])
+                    d_tmp['apk_md5'] = d_app['apk_md5']
+                    d_tmp['app_size'] = d_app['appsize']
+                except Exception as e:
+                    d_tmp['error_code'] = -1
+                    d_tmp['error_reason'] = '{}'.format(e)
+                    return d_tmp
+                else:
+                    return d_tmp
+            else:
+                d_tmp['error_code'] = -1
+                d_tmp['error_reason'] = 'cant find this info of {}'.format(package_name)
+                return d_tmp
+        else:
+            d_tmp['error_code'] = -1
+            d_tmp['error_reason'] = 'please confirm {}'.format(package_name)
+            return d_tmp
 
     @staticmethod
     def get_user_app_info_for_edit_get(email, package):
@@ -317,14 +380,8 @@ class UserModel(object):
         value = db.hget('dev_user_apps_package:%s' % email, package)
         if value:
             obj = json.loads(value)
-            if isinstance(obj['works'], list):
-                obj['works'] = get_styles(obj['works'])
-                obj['style'] = obj['works']
-                db.hset('dev_user_apps_package:%s' % email, package, json.dumps(obj))
-            # obj.setdefault('background', '')
-            # obj.setdefault('instruction', '')
             # fix old data
-            # for k in ['new_logo', 'new_captures', 'icon', 'background', 'instruction']:
+            # for k in ['new_logo', 'new_captures', 'icon']:
             for k in ['new_logo', 'new_captures', 'icon']:
                 if obj[k].startswith('static/upload'):
                     if k == 'new_captures':
@@ -351,3 +408,9 @@ class UserModel(object):
             if value:
                 return json.loads(value)
         return None
+
+
+if __name__ == '__main__':
+    res = UserModel.get_app_package_list('root@root.com', setting.RECOMMEND_APP_LIST)
+    print len(res)
+

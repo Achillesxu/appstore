@@ -31,6 +31,10 @@ handler = [
 
     (r"/upload/imgfile", app_dev.handler.user.UploadImgFile),
     #
+    (r"/recommend/apps_list", app_dev.handler.user.RecommendAppList),
+    (r"/app/detail/get", app_dev.handler.user.AppDetail),
+    (r"/app/update/get", app_dev.handler.user.AppUpdate),
+    (r"/app/list/get", app_dev.handler.user.AppCategoryList),
 
     (r'.*', app_dev.handler.user.PageNotFoundHandler)
 ]

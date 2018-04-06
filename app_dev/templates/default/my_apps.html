@@ -70,7 +70,7 @@ admin_review_dict = {
 	<table class="table_list">
 		<thead>
 			<tr>
-				<th>名称（点击应用名称 修改或更新 应用）</th>
+				<th>名称</th>
 				<th>版本号</th>
 				<th>修改日期</th>
 				<th>应用分类</th>
@@ -83,12 +83,12 @@ admin_review_dict = {
         <?py     key_start = each['package'] ?>
         <?py     score_start = each['modified'] ?>
 			<tr>
-				<td><a href="/user/edit_app?package=#{each['package']}">#{each['name']}</a> #{admin_review_dict[each['admin_review']]}</td>
+				<td><a href="/user/edit_app?package=#{each['package']}">#{each['name']}</a></td>
 				<td>V#{each['versionname']}</td>
 				<td>#{tm2str2(each['modified'])}</td>
-				<td>#{channel_setting.DEFAULT_CATEGORY[each['category']]['text']}</td>
+				<td>#{setting.CATE_DICT_REVERSE[each['category'][:-1]]}</td>
 				<td>#{size2str(each['appsize'])}</td>
-				<td>#{'<a href="?act=del&package=%s" onclick="return confirm(\'删除后无法恢复,确定要删除吗?\')" class="delete"></a>' % each['package'] if each['admin_review']==0 else ''}</td>
+				<td>#{'<a href="?act=del&package=%s" onclick="return confirm(\'删除后无法恢复,确定要删除吗?\')" class="delete"></a>' % each['package']}</td>
 			</tr>
         <?py #endfor ?>
 		</tbody>
