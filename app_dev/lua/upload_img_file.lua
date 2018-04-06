@@ -12,7 +12,7 @@ local str = require "resty.string"
 
 ngx.header.content_type = "application/json;charset=UTF-8"
 
-local osfilepath = "/Users/achilles_xushy/PycharmProjects/config_and_log/ssdb/attachment/upload/"
+local osfilepath = "/Users/achilles_xushy/PycharmProjects/config_and_log/ssdb/attachment/static/upload/"
 local i
 local file_md5
 local file_size

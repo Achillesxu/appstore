@@ -175,7 +175,7 @@ $(function(){
 			rspobj = jQuery.parseJSON(data);
             if(rspobj.status==200){
             	$('.box>ul .del_one').css('display','none');
-            	$('.box>ul .uploadify').css('background-image','url("http://#{{dev_setting.DOMAIN}}/static/dev/image/default2.png")');
+            	$('.box>ul .uploadify').css('background-image','url("http://#{{setting.DOMAIN}}/static/dev/image/default2.png")');
             	$('.box>ul li:gt(0)').css('display','none');
                 $.each(rspobj.img_list, function(i,n){
                 	$('#one_'+(i+1)).css('background-image','url('+ n +')');

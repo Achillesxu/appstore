@@ -3,6 +3,7 @@
 COOKIE_SECRET = '91orTzKXQAsaYekL7gEtGlJJFuYh7EQnp2XdTP1o/Vo='
 JQUERY_LIB = '/static/js/jquery-latest.js'
 
+DOMAIN = '127.0.0.1'
 
 UPLOAD_DIR = '/Users/achilles_xushy/PycharmProjects/config_and_log/ssdb/attachment'
 

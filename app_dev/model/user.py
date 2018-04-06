@@ -333,9 +333,9 @@ class UserModel(object):
                         obj[k] = '/%s' % obj[k].strip('/')
                 else:
                     if k == 'new_captures':
-                        obj[k] = ','.join(['http://%s/%s' % (setting.MY_DOMAIN_QINIU, x.strip('/')) for x in obj[k].split(',')])
+                        obj[k] = ','.join(['http://%s/%s' % (setting.DOMAIN, x.strip('/')) for x in obj[k].split(',')])
                     else:
-                        obj[k] = 'http://%s/%s' % (setting.MY_DOMAIN_QINIU, obj[k].strip('/'))
+                        obj[k] = 'http://%s/%s' % (setting.DOMAIN, obj[k].strip('/'))
             return obj
         return None
 
