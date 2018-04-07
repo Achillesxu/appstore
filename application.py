@@ -28,8 +28,6 @@ import setting
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-__author__ = 'weizs'
-
 # achilles_xushy-2016-11-10 添加日志的格式化信息, 将需要记录的信息记录在stdout，在supervisor的控制下，也被卸载文件里面，
 # 所以去supervisor的配置文件里面查找stdout文件的目录
 logging.basicConfig(level=logging.INFO,

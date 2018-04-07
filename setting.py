@@ -15,9 +15,9 @@
 COOKIE_SECRET = '91orTzKXQAsaYekL7gEtGlJJFuYh7EQnp2XdTP1o/Vo='
 JQUERY_LIB = '/static/js/jquery-latest.js'
 
-DOMAIN = '127.0.0.1'
+DOMAIN = '23.237.14.90'
 
-UPLOAD_DIR = '/Users/achilles_xushy/PycharmProjects/config_and_log/ssdb/attachment'
+UPLOAD_DIR = '/var/www/ssdb/attachment'
 
 # 用于记录输出到stdout的log信息
 MY_APP = 'my_app'
