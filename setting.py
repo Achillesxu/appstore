@@ -24,22 +24,21 @@ MY_APP = 'my_app'
 
 MAX_WAIT_SECONDS_BEFORE_SHUTDOWN = 8  # 程序关闭/重启等待时间 秒
 
-CATE_LIST = [u'影音', u'游戏', u'教育', u'生活', u'工具']
+CATE_LIST = list()
 CATE_DICT_REVERSE = {}
 CATE_DICT = {
-    u'影音': 'video',
-    u'游戏': 'game',
-    u'教育': 'education',
-    u'生活': 'daily',
+    u'电视直播': 'tv_play',
+    u'视频点播': 'video',
+    u'音乐娱乐': 'music',
     u'工具': 'tool'
 }
 
 for k, v in CATE_DICT.iteritems():
+    CATE_LIST.append(k)
     CATE_DICT_REVERSE[v] = k
 
 RECOMMEND_APP_LIST = [
-    'com.ktcp.video',
-    'hdpfans.com',
+    'com.vcinema.client.tv',
 ]
 
 root_name = 'root@root.com'
