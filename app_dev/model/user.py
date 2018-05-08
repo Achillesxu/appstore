@@ -329,7 +329,7 @@ class UserModel(object):
                         d_tmp['apk_path'] = 'http://{}/{}'.format(setting.DOMAIN, d_app['apk_path'])
                         d_tmp['icon'] = 'http://{}/{}'.format(setting.DOMAIN, d_app['icon'])
                         d_tmp['logo'] = 'http://{}/{}'.format(setting.DOMAIN, d_app['new_logo'])
-                        d_tmp['captures'] = ''.join(['http://{}/{}'.format(setting.DOMAIN, i)
+                        d_tmp['captures'] = ''.join(['http://{}/{},'.format(setting.DOMAIN, i)
                                                      for i in d_app['new_captures'].split(',')])
                         d_tmp['apk_md5'] = d_app['apk_md5']
                         d_tmp['app_size'] = d_app['appsize']
