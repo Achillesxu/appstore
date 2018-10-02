@@ -15,7 +15,7 @@
 COOKIE_SECRET = '91orTzKXQAsaYekL7gEtGlJJFuYh7EQnp2XdTP1o/Vo='
 JQUERY_LIB = '/static/js/jquery-latest.js'
 
-DOMAIN = '23.237.14.90'
+DOMAIN = 'hxzwmk.com'
 
 UPLOAD_DIR = '/var/www/ssdb/attachment'
 
@@ -30,7 +30,8 @@ CATE_DICT = {
     u'电视直播': 'tv_play',
     u'视频点播': 'video',
     u'音乐娱乐': 'music',
-    u'工具': 'tool'
+    u'工具': 'tool',
+    u'其他': 'other'
 }
 
 for k, v in CATE_DICT.iteritems():

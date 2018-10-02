@@ -8,3 +8,6 @@
 
 # 20180510
     1. get_app_detail and get_app_package_list captures返回添加逗号
+    
+# 20181002
+    1. 修改域名，添加其他分类
