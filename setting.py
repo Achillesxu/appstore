@@ -38,7 +38,21 @@ for k, v in CATE_DICT.iteritems():
     CATE_DICT_REVERSE[v] = k
 
 RECOMMEND_APP_LIST = [
-    'com.vcinema.client.tv',
+    'com.smalls.newvideotwo',
+    'com.smalls.wonderfulyueplus',
+    'com.cts.live',
+    'com.smalls.wonderfulstore',
+    'com.smalls.wonderfulhome',
+    'com.smalls.wonderfulreplay',
+    'com.smalls.sports',
+    'com.google.android.youtube.googletv',
+    'com.ijinshan.mguardkktv',
+    'com.hpplay.happyplay.aw',
+    'com.pplive.androidxl',
+    'com.pptv.tvsports',
+    'cn.bangtv.ott',
+    'com.qianxun.tvbox',
+    'com.smalls.yuereplay',
 ]
 
 root_name = 'root@root.com'
